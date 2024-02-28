@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="kpUtils:jar">
+    <output-path>$PROJECT_DIR$/out</output-path>
+    <root id="archive" name="kpUtils.jar" />
+  </artifact>
+</component>
