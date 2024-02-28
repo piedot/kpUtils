@@ -1,4 +1,4 @@
-package utils;
+package kpUtils.src.utils;
 
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.component.tdi.Skill;

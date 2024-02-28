@@ -1,4 +1,4 @@
-package utils;
+package kpUtils.src.utils;
 
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.component.Item;

@@ -1,4 +1,4 @@
-package utils;
+package kpUtils.src.utils;
 
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
