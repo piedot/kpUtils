@@ -1,4 +1,4 @@
-package kpUtils.src.utils;
+package utils;
 
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
@@ -124,10 +124,13 @@ public class kpPaint
 
         for (Position tile : area.getTiles())
         {
-            minX = Math.min(minX, tile.x);
-            minY = Math.min(minY, tile.y);
-            maxX = Math.max(maxX, tile.x);
-            maxY = Math.max(maxY, tile.y);
+            int x = tile.getX();
+            int y = tile.getY();
+
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
         }
 
         Polygon nwPolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(minX, maxY));

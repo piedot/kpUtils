@@ -1,4 +1,4 @@
-package kpUtils.src.utils;
+package utils;
 
 import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.adapter.type.SceneNode;

@@ -1,4 +1,4 @@
-package kpUtils.src.utils;
+package utils;
 
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
@@ -25,7 +25,9 @@ public class kpUtils
 
     public static Area GetAreaFromTile(Position tile, int size)
     {
-        return Area.rectangular(tile.x - size, tile.y - size, tile.x + size, tile.y + size, tile.level);
+        int x = tile.getX();
+        int y = tile.getY();
+        return Area.rectangular(x - size, y - size, x + size, y + size, tile.level);
     }
 
     public static double DistanceTo(Area area, Position destination)
@@ -59,7 +61,7 @@ public class kpUtils
 
         for (Position offset : offsets)
         {
-            returnTiles.add(new Position(base.x + offset.x, base.y + offset.y, base.level));
+            returnTiles.add(new Position(base.getX() + offset.getX(), base.getY() + offset.getY(), base.level));
         }
 
         return returnTiles;
