@@ -47,6 +47,12 @@ public class kpUtils
         return lowest;
     }
 
+    // Does not add the floor level together, instead it returns the floor level of the first position
+    public static Position AddTogether(Position p1, Position p2)
+    {
+        return new Position(p1.getX() + p2.getX(), p1.getY() + p2.getY(), p1.getFloorLevel());
+    }
+
     public static Position GetInstancePosition(Position globalPosition)
     {
         return globalPosition.getInstancePositions().stream()
