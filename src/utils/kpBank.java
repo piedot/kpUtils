@@ -18,9 +18,8 @@ public class kpBank
 
         if (!Bank.isOpen())
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Opening " + location.toString() + " bank", 10, () -> {
-                Bank.open(location);
-            }), 0);
+            Log.info("Opening " + location.toString() + " bank");
+            Bank.open(location);
 
             return false;
         }
@@ -40,9 +39,8 @@ public class kpBank
 
         if (bankItem != null && bankItem.getStackSize() >= quantity)
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Withdraw " + quantity + " " + itemName, 50, () -> {
-                Inventories.bank().withdraw(itemName, quantity);
-            }), 0);
+            Log.info("Withdraw " + quantity + " " + itemName);
+            Inventories.bank().withdraw(itemName, quantity);
 
             return true;
         }
@@ -64,9 +62,8 @@ public class kpBank
 
         if (bankItem != null)
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Withdraw all " + itemName, 50, () -> {
-                Inventories.bank().withdrawAll(item -> item.names(itemName).results().first());
-            }), 0);
+            Log.info("Withdraw all " + itemName);
+            Inventories.bank().withdrawAll(item -> item.names(itemName).results().first());
 
             return true;
         }

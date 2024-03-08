@@ -1,5 +1,6 @@
 package utils;
 
+import org.rspeer.commons.logging.Log;
 import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.adapter.type.SceneNode;
 import org.rspeer.game.movement.Movement;
@@ -11,9 +12,8 @@ public class kpMovement
     {
         if (!Movement.isRunEnabled() && Movement.getRunEnergy() > 12)
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Enabling run", 10, () -> {
-                Movement.toggleRun(true);
-            }), 0);
+            Log.info("WalkTo - Enabling run");
+            Movement.toggleRun(true);
         }
 
         if (Movement.isDestinationSet())
@@ -21,8 +21,13 @@ public class kpMovement
             return;
         }
 
-        kpTaskQueue.AddTask(new kpTaskQueue.Task("Walking to [" + destination.getX() + ", " + destination.getY() + "]", 20, () -> {
-            Movement.walkTo(destination);
-        }), 0);
+        Log.info("Walking to [" + destination.getX() + ", " + destination.getY() + "]");
+        Movement.walkTo(destination);
+    }
+
+    public static void Step(SceneNode destination)
+    {
+        Log.info("Stepping to [" + destination.getX() + ", " + destination.getY() + "]");
+        Movement.walkTowards(destination);
     }
 }

@@ -23,9 +23,7 @@ public class kpPrayer
     {
         for (Prayer prayer : Prayers.getActive())
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Disabling " + prayer.toString(), 20, () -> {
-                Prayers.select(true, prayer);
-            }), 0);
+            Prayers.select(true, prayer);
         }
     }
 
@@ -35,16 +33,17 @@ public class kpPrayer
         {
             if (Prayers.isActive(prayer))
             {
+                Log.info("Disabling " + prayer.toString());
                 Prayers.select(true, prayer);
             }
         }
     }
 
-    // Pass this into TaskQueue
     public static void Select(Prayer.Modern ... prayers)
     {
         for (Prayer.Modern prayer : prayers)
         {
+            Log.info("Selecting " + prayer.toString());
             Prayers.select(true, prayer);
         }
     }

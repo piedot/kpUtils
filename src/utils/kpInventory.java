@@ -14,6 +14,7 @@ public class kpInventory
     {
         int inventoryCount = Inventories.backpack().query().names(itemName).filter(i -> i.isNoted() == noted).results().size();
         int stackCount = 0;
+
         Item item = Inventories.backpack().query().names(itemName).filter(i -> i.isNoted() == noted).results().first();
 
         if (item != null)

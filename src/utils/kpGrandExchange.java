@@ -34,9 +34,8 @@ public class kpGrandExchange
         {
             if (transaction.getProgress().equals(StockMarketTransaction.Progress.FINISHED))
             {
-                kpTaskQueue.AddTask(new kpTaskQueue.Task("Collecting offer id " + itemId, 10, () -> {
-                    StockMarket.collectAll(false);
-                }), 0);
+                Log.info("Collecting offer id " + itemId);
+                StockMarket.collectAll(false);
 
                 return;
             }
@@ -64,18 +63,16 @@ public class kpGrandExchange
 
         if (!grandExchangeArea.contains(localPlayer))
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Moving to the GE", 10, () -> {
-                Movement.walkTo(grandExchangeArea.getRandomTile());
-            }), 0);
+            Log.info("Moving to the GE");
+            Movement.walkTo(grandExchangeArea.getRandomTile());
 
             return;
         }
 
         if (!StockMarket.isOpen())
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Open the GE", 10, () -> {
-                StockMarket.open();
-            }), 0);
+            Log.info("Opening the GE");
+            StockMarket.open();
 
             return;
         }

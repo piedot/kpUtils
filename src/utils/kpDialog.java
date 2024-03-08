@@ -35,9 +35,8 @@ public class kpDialog
     {
         if (Dialog.canContinue())
         {
-            kpTaskQueue.AddTask(new kpTaskQueue.Task("Continue dialogue", 10, () -> {
-                Dialog.processContinue();
-            }), 0);
+            Log.info("Processing dialogue");
+            Dialog.processContinue();
 
             return true;
         }

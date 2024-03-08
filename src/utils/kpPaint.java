@@ -20,8 +20,6 @@ public class kpPaint
     {
         Color oldColor = g2d.getColor();
 
-        g2d.setColor(color);
-
         if (center)
         {
             FontMetrics fm = g2d.getFontMetrics();
@@ -133,10 +131,10 @@ public class kpPaint
             maxY = Math.max(maxY, y);
         }
 
-        Polygon nwPolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(minX, maxY));
-        Polygon nePolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(maxX, maxY));
-        Polygon swPolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(minX, minY));
-        Polygon sePolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(maxX, minY));
+        Polygon nwPolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(minX, maxY, area.getFloorLevel()));
+        Polygon nePolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(maxX, maxY, area.getFloorLevel()));
+        Polygon swPolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(minX, minY, area.getFloorLevel()));
+        Polygon sePolygon = Projection.getPositionPolygon(Projection.Canvas.VIEWPORT, new Position(maxX, minY, area.getFloorLevel()));
 
         // Draw
 
