@@ -39,6 +39,18 @@ public class kpPrayer
         }
     }
 
+    public static void Enable(Prayer ... prayers)
+    {
+        for (Prayer prayer : prayers)
+        {
+            if (!Prayers.isActive(prayer))
+            {
+                Log.info("Enabling " + prayer.toString());
+                Prayers.select(true, prayer);
+            }
+        }
+    }
+
     public static void Select(Prayer ... prayers)
     {
         for (Prayer prayer : prayers)
