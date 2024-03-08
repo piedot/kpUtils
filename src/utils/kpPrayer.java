@@ -14,7 +14,7 @@ public class kpPrayer
         return !Prayers.getActive().isEmpty();
     }
 
-    public static boolean IsActive(Prayer.Modern prayer)
+    public static boolean IsActive(Prayer prayer)
     {
         return Prayers.isActive(prayer);
     }
@@ -27,7 +27,7 @@ public class kpPrayer
         }
     }
 
-    public static void Disable(Prayer.Modern ... prayers)
+    public static void Disable(Prayer ... prayers)
     {
         for (Prayer prayer : prayers)
         {
@@ -39,9 +39,9 @@ public class kpPrayer
         }
     }
 
-    public static void Select(Prayer.Modern ... prayers)
+    public static void Select(Prayer ... prayers)
     {
-        for (Prayer.Modern prayer : prayers)
+        for (Prayer prayer : prayers)
         {
             Log.info("Selecting " + prayer.toString());
             Prayers.select(true, prayer);
