@@ -16,8 +16,14 @@ public class kpMovement
             Movement.toggleRun(true);
         }
 
-        if (Movement.isDestinationSet())
+        Player localPlayer = Players.self();
+
+        if (localPlayer == null)
+            return;
+
+        if (localPlayer.isMoving())
         {
+            Log.info("WalkTo - we are moving");
             return;
         }
 
