@@ -82,7 +82,7 @@ public class kpGrandExchange
         StockMarket.createOffer(type)
                 .item(itemId)
                 .quantity(quantity)
-                .price(value -> GetGuaranteedPrice(itemId, quantity)) // todo: if we get "not enough money" in chat, stop the script
+                .price(value -> GetMultiplierPrice(itemId, quantity)) // todo: if we get "not enough money" in chat, stop the script
                 .build()
                 .createTransaction();
 
@@ -91,8 +91,7 @@ public class kpGrandExchange
         return;
     }
 
-    // "Guaranteed" is an overstatement
-    public static int GetGuaranteedPrice(int itemId, int quantity)
+    public static int GetMultiplierPrice(int itemId, int quantity)
     {
         int singularItemPrice = PriceCheck.lookup(itemId).getAverage();
         double totalItemsPrice = singularItemPrice * quantity;
@@ -107,15 +106,15 @@ public class kpGrandExchange
 
         if (totalItemsPrice > 100_000)
         {
-            totalItemsPrice *= 3;
+            totalItemsPrice *= 2;
         }
         else if (totalItemsPrice > 10_000)
         {
-            totalItemsPrice *= 5;
+            totalItemsPrice *= 3;
         }
         else if (totalItemsPrice > 1_000)
         {
-            totalItemsPrice *= 10;
+            totalItemsPrice *= 8;
         }
         else
         {

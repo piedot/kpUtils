@@ -5,6 +5,7 @@ import org.rspeer.game.adapter.component.inventory.Bank;
 import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.component.Item;
+import org.rspeer.game.config.item.entry.builder.ItemEntryBuilder;
 import org.rspeer.game.scene.Players;
 
 public class kpBank
