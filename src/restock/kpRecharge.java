@@ -1,23 +1,26 @@
-package utils.restock;
+package restock;
 
-import org.rspeer.game.component.Item;
+import org.rspeer.game.adapter.scene.Npc;
+import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.position.area.Area;
-import org.rspeer.game.web.Web;
+import org.rspeer.game.scene.Npcs;
+import org.rspeer.game.scene.Players;
+import utils.kpDialog;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class kpRestock
+public class kpRecharge
 {
-    public class RestockItem
+    private static class RechargeItem
     {
         int itemId;
         int quantity;
         boolean shouldBuy;
 
-        public RestockItem(int itemId, int quantity, boolean shouldBuy)
+        public RechargeItem(int itemId, int quantity, boolean shouldBuy)
         {
             this.itemId = itemId;
             this.quantity = quantity;
@@ -25,55 +28,55 @@ public class kpRestock
         }
     }
 
-    class kpRestockData
+    private static class kpRechargeData
     {
         String npcName;
         String npcInteraction;
         Area areaToTravelTo;
         List<String> dialogueOptions; // To be checked with .contains
-        List<RestockItem> restockItems;
+        List<RechargeItem> rechargeItems;
         List<Integer> itemIdsForTravel;
 
         // Travel, talk, interact
-        public kpRestockData(String npcName, String npcInteraction, Area areaToTravelTo, List<String> dialogueOptions, List<RestockItem> restockItems, List<Integer> itemIdsForTravel)
+        public kpRechargeData(String npcName, String npcInteraction, Area areaToTravelTo, List<String> dialogueOptions, List<RechargeItem> rechargeItems, List<Integer> itemIdsForTravel)
         {
             this.npcInteraction = npcInteraction;
             this.npcName = npcName;
             this.areaToTravelTo = areaToTravelTo;
             this.dialogueOptions = dialogueOptions;
-            this.restockItems = restockItems;
+            this.rechargeItems = rechargeItems;
             this.itemIdsForTravel = itemIdsForTravel;
         }
 
         // Buy items from the GE and use on the item
-        public kpRestockData(List<RestockItem> restockItems, List<Integer> itemIdsForTravel)
+        public kpRechargeData(List<RechargeItem> rechargeItems, List<Integer> itemIdsForTravel)
         {
-            this.restockItems = restockItems;
+            this.rechargeItems = rechargeItems;
             this.itemIdsForTravel = itemIdsForTravel;
         }
     }
 
-    kpRestockData barrowsRepair = new kpRestockData(
+    private static kpRechargeData barrowsRepair = new kpRechargeData(
             "Bob",
             "Repair",
             Data.bobsBrilliantAxesShop,
             Arrays.asList("Repair all items: ", "Repair that item: "),
-            Arrays.asList(new RestockItem(Data.COINS, -1, false)),
+            Arrays.asList(new RechargeItem(Data.COINS, -1, false)),
             Arrays.asList(Data.LUMBRIDGE_TELEPORT, Data.VARROCK_TELEPORT)
     );
 
-    kpRestockData tridentOfTheSeasRecharge = new kpRestockData(
+    private static kpRechargeData tridentOfTheSeasRecharge = new kpRechargeData(
             Arrays.asList(
-                    new RestockItem(Data.DEATH_RUNE, 2500, true),
-                    new RestockItem(Data.CHAOS_RUNE, 2500, true),
-                    new RestockItem(Data.FIRE_RUNE, 12500, true),
-                    new RestockItem(Data.COINS, 25000, false)),
+                    new RechargeItem(Data.DEATH_RUNE, 2500, true),
+                    new RechargeItem(Data.CHAOS_RUNE, 2500, true),
+                    new RechargeItem(Data.FIRE_RUNE, 12500, true),
+                    new RechargeItem(Data.COINS, 25000, false)),
             Arrays.asList(
                     Data.VARROCK_TELEPORT,
                     Data.RING_OF_WEALTH)
     );
 
-    Map<String, kpRestockData> restockData = new HashMap<>(){{
+    private static Map<String, kpRechargeData> rechargeDataMap = new HashMap<>(){{
 
         // Barrows
 
@@ -114,20 +117,52 @@ public class kpRestock
 
     }};
 
-
-    public static void Restock(kpItemEntry itemEntry)
-    {
-        // Todo
+    // Todo
         /*
             Lumbridge Barrows repair
             Swamp & Seas trident recharge
             Blowpipe recharge + darts
         */
 
+    public static void Restock(kpItemEntry itemEntry)
+    {
+        if (itemEntry == null)
+            return;
+
+        Player localPlayer = Players.self();
+
+        if (localPlayer == null)
+            return;
+
+        if (localPlayer.isMoving())
+            return;
+
+        kpRechargeData rechargeData = rechargeDataMap.get(itemEntry.getKey());
+
+        if (kpDialog.Continue())
+        {
+            return;
+        }
+
+        if (kpDialog.Select(rechargeData.dialogueOptions))
+        {
+            return;
+        }
+
+        if (kpDialog.TypeCharges())
+        {
+            return;
+        }
+
+        Npc npcToTalkTo = Npcs.query().names(rechargeData.npcName).actions(rechargeData.npcInteraction).reachable().results().first();
+
+        if (npcToTalkTo != null)
+        {
+            npcToTalkTo.interact(rechargeData.npcInteraction);
+            return;
+        }
 
 
-        // Check interfaces for options to continue/press
-        // Check interfaces for amount of charges, input max
 
         // If npc to talk to is not null, talk to it
 

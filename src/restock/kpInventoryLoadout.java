@@ -1,4 +1,4 @@
-package utils.restock;
+package restock;
 
 import java.util.HashMap;
 import java.util.Map;

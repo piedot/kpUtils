@@ -1,4 +1,4 @@
-package utils.restock;
+package restock;
 
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;

@@ -10,30 +10,30 @@ import org.rspeer.game.query.component.ComponentQuery;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class kpDialog
 {
     private final static int CHARGE_DIALOGUE_ID = 162;
     private final static int CHARGE_DIALOGUE_TEXT_ID = 41;
 
-    public static void ProcessAndSelect(String ... options)
+    public static boolean Select(List<String> options)
     {
-        if (Continue())
-            return;
+        String[] optionsArray = options.toArray(String[]::new);
 
-        InterfaceComponent dialogOption = Dialog.getChatOptions().actions(options).results().first();
+        // Todo check that this returns the first action out of the 'options' list we provided
+        InterfaceComponent dialogOption = Dialog.getChatOptions().actionContains(optionsArray).results().first();
 
         if (dialogOption == null)
         {
-            Log.info("Failed to continue dialogue with " + Arrays.toString(options));
-            return;
+            Log.info("Failed to continue dialogue with " + Arrays.toString(optionsArray));
+            return false;
         }
 
         Log.info("Processing chat option " + dialogOption.getText() + " index " + dialogOption.getIndex());
 
-        Dialog.process(dialogOption.getIndex());
-
-        return;
+        return Dialog.process(dialogOption.getIndex());
     }
 
     public static boolean Continue()
@@ -47,23 +47,25 @@ public class kpDialog
         return false;
     }
 
-    public static boolean TypeValue(int value)
+    public static boolean TypeCharges()
     {
         InterfaceComponent dialogText = Interfaces.getDirect(CHARGE_DIALOGUE_ID, CHARGE_DIALOGUE_TEXT_ID);
 
-        if (dialogText == null)
+        if (dialogText == null || !dialogText.isVisible())
         {
-            Log.info("Failed to find TypeValue dialog text");
+            Log.info("TypeCharges text was not visible");
             return false;
         }
 
         String text = dialogText.getText();
 
-        if (text == null)
+        if (text == null || text.isEmpty() || text.isBlank())
         {
-            Log.info("TypeValue text was null");
+            Log.info("TypeCharges text was null or empty");
             return false;
         }
+
+        // How many charges would you like to add? (0 - 2,500)
 
         if (!text.contains("How many charges would you like to add?"))
         {
@@ -71,7 +73,31 @@ public class kpDialog
             return false;
         }
 
-        Keyboard.sendText(String.valueOf(value), true);
+        text = text.replace(",", ""); // Remove "," from for example "2,500"
+
+        Pattern pattern = Pattern.compile("How many charges would you like to add\\? \\(0 - (\\d+)\\)");
+
+        Matcher matcher = pattern.matcher(text);
+
+        int maxChargesToAdd = -1;
+
+        if (matcher.find())
+        {
+            maxChargesToAdd = Integer.parseInt(matcher.group(1));
+        }
+        else
+        {
+            Log.warn("Failed to find sanity");
+            return false;
+        }
+
+        if (maxChargesToAdd <= 0)
+        {
+            Log.info("Failed to find charges, <= 0");
+            return false;
+        }
+
+        Keyboard.sendText(String.valueOf(maxChargesToAdd), true);
 
         return true;
     }

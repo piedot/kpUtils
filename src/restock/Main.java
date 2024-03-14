@@ -1,4 +1,4 @@
-package utils.restock;
+package restock;
 
 class Main
 {
