@@ -16,25 +16,26 @@ public class kpMovement
             Movement.toggleRun(true);
         }
 
-        Player localPlayer = Players.self();
-
-        if (localPlayer == null)
-            return;
-
-        if (localPlayer.isMoving())
+        if (IsMoving())
         {
-            Log.info("WalkTo - we are moving");
+            Log.info("WalkTo - We are moving");
             return;
         }
 
         Log.info("Walking to [" + destination.getX() + ", " + destination.getY() + "]");
+
         Movement.walkTo(destination);
+
+        return;
     }
 
     public static void Step(SceneNode destination)
     {
         Log.info("Stepping to [" + destination.getX() + ", " + destination.getY() + "]");
+
         Movement.walkTowards(destination);
+
+        return;
     }
 
     public static boolean IsMoving()
