@@ -36,4 +36,14 @@ public class kpMovement
         Log.info("Stepping to [" + destination.getX() + ", " + destination.getY() + "]");
         Movement.walkTowards(destination);
     }
+
+    public static boolean IsMoving()
+    {
+        Player localPlayer = Players.self();
+
+        if (localPlayer == null)
+            return false;
+
+        return localPlayer.isMoving() && Movement.isDestinationSet();
+    }
 }

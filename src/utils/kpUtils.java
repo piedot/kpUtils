@@ -53,10 +53,20 @@ public class kpUtils
         return lowest;
     }
 
-    // Does not add the floor level together, instead it returns the floor level of the first position
-    public static Position AddTogether(Position p1, Position p2)
+    /**
+     * Does not add the floor level together, instead it returns the floor level of the first position
+     */
+    public static Position Add(Position p1, Position p2)
     {
         return new Position(p1.getX() + p2.getX(), p1.getY() + p2.getY(), p1.getFloorLevel());
+    }
+
+    /**
+     * Does not subtract the floor level, instead it returns the floor level of the first position
+     */
+    public static Position Subtract(Position p1, Position p2)
+    {
+        return new Position(p1.getX() - p2.getX(), p1.getY() - p2.getY(), p1.getFloorLevel());
     }
 
     public static Position GetInstancePosition(Position globalPosition)
@@ -87,22 +97,6 @@ public class kpUtils
         {
             Tabs.open(tab);
         }
-    }
-
-    // Interacting
-
-    public static void Interact(Item item, String action)
-    {
-        OpenTabIfNeeded(Tab.INVENTORY);
-
-        item.interact(action);
-    }
-
-    public static void Interact(Interactable interactable, String action)
-    {
-        interactable.interact(action);
-
-        return;
     }
 
     // Misc
@@ -435,7 +429,7 @@ public class kpUtils
 
         for (Position position : destination.getTiles())
         {
-            double distance = source.distance(Distance.CHEBYSHEV, position); // Euclidean?
+            double distance = source.distance(Distance.CHEBYSHEV, position); // TODO verify
 
             if (distance < lowestDistance)
             {
