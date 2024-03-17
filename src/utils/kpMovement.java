@@ -8,13 +8,23 @@ import org.rspeer.game.scene.Players;
 
 public class kpMovement
 {
-    public static void WalkTo(SceneNode destination)
+    public static void ActivateRunEnergy(int at)
     {
-        if (!Movement.isRunEnabled() && Movement.getRunEnergy() > 12)
+        boolean shouldEnableRunEnergy = Movement.getRunEnergy() >= at;
+
+        Log.info("ActivateRunEnergy(" + shouldEnableRunEnergy + ")");
+
+        if (!Movement.isRunEnabled() && shouldEnableRunEnergy)
         {
-            Log.info("WalkTo - Enabling run");
             Movement.toggleRun(true);
         }
+
+        return;
+    }
+
+    public static void WalkTo(SceneNode destination)
+    {
+        ActivateRunEnergy(11);
 
         if (IsMoving())
         {
@@ -31,6 +41,8 @@ public class kpMovement
 
     public static void Step(SceneNode destination)
     {
+        ActivateRunEnergy(12);
+
         Log.info("Stepping to [" + destination.getX() + ", " + destination.getY() + "]");
 
         Movement.walkTowards(destination);
