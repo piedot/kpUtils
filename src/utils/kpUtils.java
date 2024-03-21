@@ -5,6 +5,7 @@ import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.InterfaceComponent;
+import org.rspeer.game.adapter.scene.Entity;
 import org.rspeer.game.adapter.scene.Npc;
 import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.adapter.type.Interactable;
@@ -54,19 +55,12 @@ public class kpUtils
     }
 
     /**
-     * Does not add the floor level together, instead it returns the floor level of the first position
+     * Does not add the floor level together, instead it returns the floor level of the first position.
+     * Can be used for subtraction
      */
     public static Position Add(Position p1, Position p2)
     {
         return new Position(p1.getX() + p2.getX(), p1.getY() + p2.getY(), p1.getFloorLevel());
-    }
-
-    /**
-     * Does not subtract the floor level, instead it returns the floor level of the first position
-     */
-    public static Position Subtract(Position p1, Position p2)
-    {
-        return new Position(p1.getX() - p2.getX(), p1.getY() - p2.getY(), p1.getFloorLevel());
     }
 
     public static Position GetInstancePosition(Position globalPosition)
@@ -422,14 +416,14 @@ public class kpUtils
         return isInFieldOfView(localPosition, npcPositionDistance.position) && npcPositionDistance.distance <= weaponRange;
     }
 
-    private static Position GetClosestPosition(Position source, Area destination)
+    public static Position GetClosestPosition(Position source, Area destination)
     {
         double lowestDistance = Double.MAX_VALUE;
         Position closestPosition = null;
 
         for (Position position : destination.getTiles())
         {
-            double distance = source.distance(Distance.CHEBYSHEV, position); // TODO verify
+            double distance = source.distance(Distance.EUCLIDEAN, position); // TODO verify
 
             if (distance < lowestDistance)
             {
@@ -441,4 +435,8 @@ public class kpUtils
         return closestPosition;
     }
 
+    public static String GetIdIfNameNull(String name, int id)
+    {
+        return name.toLowerCase().contains("null") ? String.valueOf(id) : name;
+    }
 }
