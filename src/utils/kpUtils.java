@@ -434,9 +434,4 @@ public class kpUtils
 
         return closestPosition;
     }
-
-    public static String GetIdIfNameNull(String name, int id)
-    {
-        return name.toLowerCase().contains("null") ? String.valueOf(id) : name;
-    }
 }
