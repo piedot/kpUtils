@@ -461,7 +461,7 @@ public class kpUtils
             meleeTiles.add(new Position(entityX, entityPositionY + entityHeight));
         }
 
-        for (int y = 0; y < entityWidth; y++)
+        for (int y = 0; y < entityHeight; y++)
         {
             int entityY = entityPositionY + y;
 

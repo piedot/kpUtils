@@ -5,6 +5,7 @@ import org.rspeer.game.adapter.scene.Npc;
 import org.rspeer.game.movement.pathfinding.Collisions;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
+import org.rspeer.game.scene.Npcs;
 import utils.kpUtils;
 
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class NpcPathFinder
             if (failedToMoveEastOrWest)
             {
                 if (
-                        kpUtils.GetMeleeTiles(offsetPosition, npcWidth - 1, npcHeight - 1).contains(storedDestination) &&
+                        kpUtils.GetMeleeTiles(offsetPosition, npcWidth, npcHeight).contains(storedDestination) &&
                         kpUtils.DistanceTo(offsetArea, storedDestination) <= storedNpcRange
                 )
                 {
