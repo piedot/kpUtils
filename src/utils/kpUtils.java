@@ -23,6 +23,7 @@ import org.rspeer.game.scene.Players;
 import org.rspeer.game.scene.Projection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -39,9 +40,14 @@ public class kpUtils
 
     public static double DistanceTo(Area area, Position destination)
     {
+        return DistanceTo(area.getTiles(), destination);
+    }
+
+    public static double DistanceTo(Collection<Position> positions, Position destination)
+    {
         double lowest = Double.MAX_VALUE;
 
-        for (Position position : area.getTiles())
+        for (Position position : positions)
         {
             double distance = position.distance(Distance.CHEBYSHEV, destination);
 
@@ -433,5 +439,36 @@ public class kpUtils
         }
 
         return closestPosition;
+    }
+
+    public static Area GetAreaFrom(Position position, int width, int height)
+    {
+        return Area.rectangular(position, new Position(position.getX() + width, position.getY() + height));
+    }
+
+    public static List<Position> GetMeleeTiles(Position entityPosition, int entityWidth, int entityHeight)
+    {
+        int entityPositionX = entityPosition.getX();
+        int entityPositionY = entityPosition.getY();
+
+        List<Position> meleeTiles = new ArrayList<>();
+
+        for (int x = 0; x < entityWidth; x++)
+        {
+            int entityX = entityPositionX + x;
+
+            meleeTiles.add(new Position(entityX, entityPositionY - 1));
+            meleeTiles.add(new Position(entityX, entityPositionY + entityHeight));
+        }
+
+        for (int y = 0; y < entityWidth; y++)
+        {
+            int entityY = entityPositionY + y;
+
+            meleeTiles.add(new Position(entityPositionX - 1, entityY));
+            meleeTiles.add(new Position(entityPositionX + entityWidth, entityY));
+        }
+
+        return meleeTiles;
     }
 }
