@@ -101,7 +101,7 @@ public class NpcPathFinder
 
             offset = new Position(offsetX, offsetY);
             offsetPosition = kpUtils.Add(currentPosition, offset);
-            Area offsetArea = kpUtils.GetAreaFrom(offsetPosition, npcWidth, npcHeight);
+            Area offsetArea = kpUtils.GetAreaFrom(offsetPosition, npcWidth - 1, npcHeight - 1);
 
             boolean failedToMoveEastOrWest = false;
 
@@ -120,7 +120,7 @@ public class NpcPathFinder
             if (failedToMoveEastOrWest)
             {
                 if (
-                        kpUtils.GetMeleeTiles(offsetPosition, npcWidth, npcHeight).contains(storedDestination) &&
+                        kpUtils.GetMeleeTiles(offsetPosition, npcWidth - 1, npcHeight - 1).contains(storedDestination) &&
                         kpUtils.DistanceTo(offsetArea, storedDestination) <= storedNpcRange
                 )
                 {
@@ -145,7 +145,7 @@ public class NpcPathFinder
             offset = new Position(offsetX, offsetY);
             offsetPosition = kpUtils.Add(currentPosition, offset);
 
-            for (Position position : kpUtils.GetAreaFrom(offsetPosition, npcWidth, npcHeight).getTiles())
+            for (Position position : kpUtils.GetAreaFrom(offsetPosition, npcWidth - 1, npcHeight - 1).getTiles())
             {
                 if (!Collisions.isReachable(position))
                 {
@@ -176,7 +176,7 @@ public class NpcPathFinder
 
     private boolean isValid(final Position pos)
     {
-        for (Position npcPos : kpUtils.GetAreaFrom(pos, storedNpc.getEntityPositionWidth(), storedNpc.getEntityPositionHeight()).getTiles())
+        for (Position npcPos : kpUtils.GetAreaFrom(pos, storedNpc.getEntityPositionWidth() - 1, storedNpc.getEntityPositionHeight() - 1).getTiles())
         {
             if (!Collisions.isReachable(npcPos))
                 return false;
