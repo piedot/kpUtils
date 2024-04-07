@@ -5,7 +5,7 @@ import org.rspeer.game.adapter.scene.Player;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Npcs;
 import org.rspeer.game.scene.Players;
-import utils.kpDialog;
+import utils.*;
 
 import java.util.Arrays;
 import java.util.HashMap;

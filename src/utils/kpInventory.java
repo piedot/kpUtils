@@ -24,4 +24,24 @@ public class kpInventory
 
         return Math.max(inventoryCount, stackCount);
     }
+
+    public static int GetCount(int[] itemIds)
+    {
+        return GetCount(itemIds, false);
+    }
+
+    public static int GetCount(int[] itemIds, boolean noted)
+    {
+        int inventoryCount = Inventories.backpack().query().ids(itemIds).filter(i -> i.isNoted() == noted).results().size();
+        int stackCount = 0;
+
+        Item item = Inventories.backpack().query().ids(itemIds).filter(i -> i.isNoted() == noted).results().first();
+
+        if (item != null)
+        {
+            stackCount = Inventories.backpack().query().ids(itemIds).filter(i -> i.isNoted() == noted).results().first().getStackSize();
+        }
+
+        return Math.max(inventoryCount, stackCount);
+    }
 }

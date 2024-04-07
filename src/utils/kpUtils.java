@@ -69,6 +69,11 @@ public class kpUtils
         return new Position(p1.getX() + p2.getX(), p1.getY() + p2.getY(), p1.getFloorLevel());
     }
 
+    public static Position Subtract(Position p1, Position p2)
+    {
+        return new Position(p1.getX() - p2.getX(), p1.getY() - p2.getY(), p1.getFloorLevel());
+    }
+
     public static Position GetInstancePosition(Position globalPosition)
     {
         return globalPosition.getInstancePositions().stream()

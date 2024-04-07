@@ -6,7 +6,7 @@ import org.rspeer.game.movement.pathfinding.Collisions;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Npcs;
-import utils.kpUtils;
+import utils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
