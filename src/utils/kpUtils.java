@@ -5,9 +5,7 @@ import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.InterfaceComponent;
-import org.rspeer.game.adapter.scene.Entity;
-import org.rspeer.game.adapter.scene.Npc;
-import org.rspeer.game.adapter.scene.Player;
+import org.rspeer.game.adapter.scene.*;
 import org.rspeer.game.adapter.type.Interactable;
 import org.rspeer.game.adapter.type.SceneNode;
 import org.rspeer.game.combat.Combat;
@@ -16,6 +14,7 @@ import org.rspeer.game.component.Interfaces;
 import org.rspeer.game.component.Item;
 import org.rspeer.game.component.tdi.Tab;
 import org.rspeer.game.component.tdi.Tabs;
+import org.rspeer.game.movement.Movement;
 import org.rspeer.game.movement.pathfinding.util.CollisionFlags;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
@@ -132,7 +131,8 @@ public class kpUtils
                 return COMBAT_STYLE.RANGED;
             case TYPE_18: // STAFF
             case TYPE_21: // BLADED STAFF
-            case TYPE_23: // POWERED_STAFF
+            case TYPE_24: // POWERED_STAFF
+            case TYPE_23: // ? POWERED_WAND ?
                 return COMBAT_STYLE.MAGIC;
             case TYPE_0: // UNARMED
             case TYPE_1: // AXE
@@ -151,8 +151,7 @@ public class kpUtils
             case TYPE_17: // STAB_SWORD
             case TYPE_20: // WHIP
             case TYPE_22: // SCYTHE/PARTISAN
-            case TYPE_24: // BANNER
-            case TYPE_25: // ?
+            case TYPE_25: // BANNER
             case TYPE_26: // BLUDGEON
             case TYPE_27: // BULWARK
                 return COMBAT_STYLE.MELEE;
@@ -455,6 +454,7 @@ public class kpUtils
     {
         int entityPositionX = entityPosition.getX();
         int entityPositionY = entityPosition.getY();
+        int entityPositionLevel = entityPosition.getFloorLevel();
 
         List<Position> meleeTiles = new ArrayList<>();
 
@@ -462,18 +462,84 @@ public class kpUtils
         {
             int entityX = entityPositionX + x;
 
-            meleeTiles.add(new Position(entityX, entityPositionY - 1));
-            meleeTiles.add(new Position(entityX, entityPositionY + entityHeight));
+            meleeTiles.add(new Position(entityX, entityPositionY - 1, entityPositionLevel));
+            meleeTiles.add(new Position(entityX, entityPositionY + entityHeight, entityPositionLevel));
         }
 
         for (int y = 0; y < entityHeight; y++)
         {
             int entityY = entityPositionY + y;
 
-            meleeTiles.add(new Position(entityPositionX - 1, entityY));
-            meleeTiles.add(new Position(entityPositionX + entityWidth, entityY));
+            meleeTiles.add(new Position(entityPositionX - 1, entityY, entityPositionLevel));
+            meleeTiles.add(new Position(entityPositionX + entityWidth, entityY, entityPositionLevel));
         }
 
         return meleeTiles;
+    }
+
+    // Tries to guess if we are interacting with a scene object
+    public static boolean IsInteractingWith(SceneObject sceneObject)
+    {
+        if (sceneObject == null)
+            return false;
+
+        int width = sceneObject.getEntityPositionWidth();
+        int height = sceneObject.getEntityPositionHeight();
+
+        Player localPlayer = Players.self();
+
+        if (localPlayer == null)
+            return false;
+
+        if (!localPlayer.isMoving()) // Moving check
+            return false;
+
+        Position localPosition = localPlayer.getPosition();
+
+        if (localPosition == null)
+            return false;
+
+        List<Position> meleeTiles = GetMeleeTiles(sceneObject.getPosition(), width, height);
+        Position destination = Movement.getDestination();
+
+        for (Position position : meleeTiles) // You can only interact with an object from its "melee tiles"
+        {
+            if (position.equals(localPosition) || position.equals(destination))
+            {
+                Log.info("Interacting with object " + sceneObject.getName());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Tries to guess if we are interacting with a pickable
+    public static boolean IsInteractingWith(Pickable pickable)
+    {
+        if (pickable == null)
+            return false;
+
+        Player localPlayer = Players.self();
+
+        if (localPlayer == null)
+            return false;
+
+        if (!localPlayer.isMoving()) // Moving check
+            return false;
+
+        Position localPosition = localPlayer.getPosition();
+
+        if (localPosition == null)
+            return false;
+
+        Position destination = Movement.getDestination();
+
+        Position pickablePosition = pickable.getPosition();
+
+        if (pickablePosition.equals(destination) || pickablePosition.equals(localPosition))
+            return true;
+
+        return false;
     }
 }
