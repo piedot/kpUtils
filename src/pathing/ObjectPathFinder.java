@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * This Pathfinder is designed for boss fights, not actual path traversal (or web-walking)
  */
-public class PathFinder
+public class ObjectPathFinder
 {
     public enum TYPE
     {
@@ -21,7 +21,7 @@ public class PathFinder
     }
 
     private Position storedStart = null;
-    private Position storedDestination = null;
+    private Collection<Position> storedDestinations = null;
 
     static public class Node
     {
@@ -43,22 +43,22 @@ public class PathFinder
         return storedPath;
     }
 
-    public PathFinder(final Position start, final Position destination)
+    public ObjectPathFinder(final Position start, final Collection<Position> destinations)
     {
         this.storedStart = start;
-        this.storedDestination = destination;
+        this.storedDestinations = destinations;
     }
 
-    public PathFinder buildPath()
+    public ObjectPathFinder buildPath()
     {
-        storedPath = bfs(storedStart, storedDestination);
+        storedPath = bfs(storedStart, storedDestinations);
 
         return this;
     }
 
-    public PathFinder setPositionTypes(List<Position> positions, TYPE type)
+    public ObjectPathFinder setPositionTypes(List<Position> positions, TYPE type)
     {
-        if (storedStart == null || storedDestination == null)
+        if (storedStart == null || storedDestinations == null)
         {
             Log.warn("setPositionTypes(" + type + ") - no stored start/destination");
             return this;
@@ -72,17 +72,17 @@ public class PathFinder
         return this;
     }
 
-    public List<Position> bfs(Position start, Position destination)
+    public List<Position> bfs(Position start, Collection<Position> destinations)
     {
         List<Position> returnPath = new ArrayList<>();
 
-        if (start == null || destination == null)
+        if (start == null || destinations == null)
         {
             Log.warn("Path was not set");
             return returnPath;
         }
 
-        if (start.equals(destination))
+        if (destinations.contains(start))
         {
             returnPath.add(start);
             return returnPath;
@@ -119,29 +119,32 @@ public class PathFinder
 
                 nodeMap.put(neighbor, new Node(type, currentTile));
 
-                if (neighbor.equals(destination)) // Found
+                for (Position destination : destinations)
                 {
-                    Position tracer = destination;
-                    Node node;
-
-                    while (true)
+                    if (neighbor.equals(destination)) // Found
                     {
-                        node = nodeMap.get(tracer);
+                        Position tracer = destination;
+                        Node node;
 
-                        if (node == null || tracer.equals(start)) // todo no .equals(start) ?
+                        while (true)
                         {
-                            break;
+                            node = nodeMap.get(tracer);
+
+                            if (node == null || tracer.equals(start)) // todo no .equals(start) ?
+                            {
+                                break;
+                            }
+
+                            returnPath.add(tracer);
+                            tracer = node.lastTile;
                         }
 
-                        returnPath.add(tracer);
-                        tracer = node.lastTile;
+                        returnPath.add(start);
+
+                        Collections.reverse(returnPath);
+
+                        return returnPath;
                     }
-
-                    returnPath.add(start);
-
-                    Collections.reverse(returnPath);
-
-                    return returnPath;
                 }
 
                 path.add(neighbor);
@@ -229,7 +232,7 @@ public class PathFinder
     private boolean isValid(final Position pos)
     {
         Node node = nodeMap.get(pos);
-        return (pos.equals(storedDestination) || Collisions.isReachable(pos)) && (node == null || node.type != TYPE.NOWALK);
+        return (storedDestinations.contains(pos) || Collisions.isReachable(pos)) && (node == null || node.type != TYPE.NOWALK);
     }
 
     public boolean found()
@@ -309,9 +312,9 @@ public class PathFinder
         return null;
     }
 
-    public static int distance(Position start, Position destination)
+    public static int distance(Position start, Collection<Position> destinations)
     {
-        int length = new PathFinder(start, destination).buildPath().length();
+        int length = new ObjectPathFinder(start, destinations).buildPath().length();
 
         return length == -1 ? Integer.MAX_VALUE : length;
     }
