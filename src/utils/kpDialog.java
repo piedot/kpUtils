@@ -20,20 +20,26 @@ public class kpDialog
 
     public static boolean Select(List<String> options)
     {
-        String[] optionsArray = options.toArray(String[]::new);
+        List<InterfaceComponent> components = Dialog.getChatOptions().actions().getDefaultProvider().get();
 
-        // Todo check that this returns the first action out of the 'options' list we provided
-        InterfaceComponent dialogOption = Dialog.getChatOptions().actionContains(optionsArray).results().first();
-
-        if (dialogOption == null)
+        for (InterfaceComponent component: components)
         {
-            Log.info("Failed to continue dialogue with " + Arrays.toString(optionsArray));
-            return false;
+            if (component == null)
+                continue;
+
+            String text = component.getText();
+
+            if (options.contains(text))
+            {
+                Log.info("Processing chat option " + text);
+
+                component.interact("Continue"); // Todo confirm
+
+                return true;
+            }
         }
 
-        Log.info("Processing chat option " + dialogOption.getText() + " index " + dialogOption.getIndex());
-
-        return Dialog.process(dialogOption.getIndex());
+        return false;
     }
 
     public static boolean Continue()

@@ -7,7 +7,8 @@ import org.rspeer.game.position.Position;
 
 public class DistanceEvaluators
 {
-    public static DistanceEvaluator PATH_FINDER_DISTANCE = new DistanceEvaluator() {
+    public static DistanceEvaluator PATH_FINDER_DISTANCE = new DistanceEvaluator()
+    {
         @Override
         public double evaluate(int x1, int y1, int z1, int x2, int y2, int z2)
         {

@@ -74,6 +74,8 @@ public class PathFinder
 
     public List<Position> bfs(Position start, Position destination)
     {
+        Log.info("bfs");
+
         List<Position> returnPath = new ArrayList<>();
 
         if (start == null || destination == null)

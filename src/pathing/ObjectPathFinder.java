@@ -2,9 +2,12 @@ package pathing;
 
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
+import org.rspeer.game.adapter.scene.Npc;
+import org.rspeer.game.adapter.scene.SceneObject;
 import org.rspeer.game.movement.Movement;
 import org.rspeer.game.movement.pathfinding.Collisions;
 import org.rspeer.game.position.Position;
+import utils.kpUtils;
 
 import java.util.*;
 
@@ -315,6 +318,28 @@ public class ObjectPathFinder
     public static int distance(Position start, Collection<Position> destinations)
     {
         int length = new ObjectPathFinder(start, destinations).buildPath().length();
+
+        return length == -1 ? Integer.MAX_VALUE : length;
+    }
+
+    public static int distance(Position start, SceneObject sceneObject)
+    {
+        if (sceneObject == null)
+            return Integer.MAX_VALUE;
+
+        int length = new ObjectPathFinder(start, kpUtils.GetAreaFrom(sceneObject.getPosition(), sceneObject.getEntityPositionWidth(), sceneObject.getEntityPositionHeight()).getTiles())
+                .buildPath().length();
+
+        return length == -1 ? Integer.MAX_VALUE : length;
+    }
+
+    public static int distance(Position start, Npc npc)
+    {
+        if (npc == null)
+            return Integer.MAX_VALUE;
+
+        int length = new ObjectPathFinder(start, kpUtils.GetAreaFrom(npc.getPosition(), npc.getEntityPositionWidth(), npc.getEntityPositionHeight()).getTiles())
+                .buildPath().length();
 
         return length == -1 ? Integer.MAX_VALUE : length;
     }
