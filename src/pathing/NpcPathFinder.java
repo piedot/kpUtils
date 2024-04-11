@@ -57,6 +57,7 @@ public class NpcPathFinder
         this.storedDestination = destination;
     }
 
+    // TODO this is wrong
     public NpcPathFinder buildPath()
     {
         Position npcPosition = storedNpc.getPosition();
@@ -125,7 +126,8 @@ public class NpcPathFinder
                         kpUtils.DistanceTo(offsetArea, storedDestination) <= storedNpcRange
                 )
                 {
-                    Log.info("Distance <= " + storedNpcRange);
+                    //Log.info("Distance <= " + storedNpcRange);
+                    foundPath = true;
                     break;
                 }
             }
@@ -158,6 +160,7 @@ public class NpcPathFinder
             if (offsetX == 0 && offsetY == 0)
             {
                 // Path not found
+                foundPath = false;
                 break;
             }
 
@@ -190,7 +193,7 @@ public class NpcPathFinder
 
     public boolean found()
     {
-        return !storedPath.isEmpty();
+        return foundPath;
     }
 
     /**

@@ -6,12 +6,9 @@ import org.rspeer.commons.math.Distance;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.InterfaceComponent;
 import org.rspeer.game.adapter.scene.*;
-import org.rspeer.game.adapter.type.Interactable;
 import org.rspeer.game.adapter.type.SceneNode;
 import org.rspeer.game.combat.Combat;
-import org.rspeer.game.component.InterfaceComposite;
 import org.rspeer.game.component.Interfaces;
-import org.rspeer.game.component.Item;
 import org.rspeer.game.component.tdi.Tab;
 import org.rspeer.game.component.tdi.Tabs;
 import org.rspeer.game.movement.Movement;
@@ -19,7 +16,6 @@ import org.rspeer.game.movement.pathfinding.util.CollisionFlags;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
-import org.rspeer.game.scene.Projection;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -177,7 +173,7 @@ public class kpUtils
      * @param target target position
      * @return If the target is in our field of view
      */
-    public static boolean isInFieldOfView(SceneNode source, SceneNode target)
+    public static boolean IsInFieldOfView(SceneNode source, SceneNode target)
     {
         if (source.getFloorLevel() != target.getFloorLevel())
         {
@@ -423,7 +419,7 @@ public class kpUtils
 
         NpcPositionDistance npcPositionDistance = GetNpcPositionDistance(localPosition, npc);
 
-        return isInFieldOfView(localPosition, npcPositionDistance.position) && npcPositionDistance.distance <= weaponRange;
+        return IsInFieldOfView(localPosition, npcPositionDistance.position) && npcPositionDistance.distance <= weaponRange;
     }
 
     public static Position GetClosestPosition(Position source, Area destination)
