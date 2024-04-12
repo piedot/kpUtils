@@ -17,10 +17,7 @@ import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class kpUtils
 {
@@ -334,27 +331,24 @@ public class kpUtils
         return true;
     }
 
-    public static class NpcPositionDistance
+    public static class AreaPositionDistance
     {
         public Position position;
-        public int distance; // chebyshev
+        public double distance; // chebyshev
 
-        public NpcPositionDistance(Position position, int distance)
+        public AreaPositionDistance(Position position, double distance)
         {
             this.position = position;
             this.distance = distance;
         }
     }
 
-    public static NpcPositionDistance GetNpcPositionDistance(Position source, Npc npc)
+    public static AreaPositionDistance GetAreaPositionDistance(Position source, Collection<Position> area)
     {
-        if (source == null || npc == null)
-            return null;
-
         Position closestPosition = null;
         double lowestDistance = Double.MAX_VALUE;
 
-        for (Position position : npc.getArea().getTiles())
+        for (Position position : area)
         {
             double distance = source.distance(Distance.EUCLIDEAN, position);
 
@@ -365,7 +359,7 @@ public class kpUtils
             }
         }
 
-        return new NpcPositionDistance(closestPosition, (int)lowestDistance);
+        return new AreaPositionDistance(closestPosition, source.distance(Distance.CHEBYSHEV, closestPosition));
     }
 
     public static double GetDistance(Position source, Npc npc)
@@ -402,24 +396,27 @@ public class kpUtils
         return lowest;
     }
 
-    public static boolean CanAttack(Npc npc, int weaponRange)
+    public static boolean CanAttack(Collection<Position> sourceAttackPositions, Collection<Position> targetAttackPositions, int weaponRange)
+    {
+        for (Position sourceAttackPosition : sourceAttackPositions)
+        {
+            AreaPositionDistance npcAreaPositionDistance = GetAreaPositionDistance(sourceAttackPosition, targetAttackPositions);
+
+            if (IsInFieldOfView(sourceAttackPosition, npcAreaPositionDistance.position) && npcAreaPositionDistance.distance <= weaponRange)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean CanAttack(Position source, Npc npc, int weaponRange)
     {
         if (npc == null)
             return false;
 
-        Player localPlayer = Players.self();
-
-        if (localPlayer == null)
-            return false;
-
-        Position localPosition = localPlayer.getPosition();
-
-        if (localPosition == null)
-            return false;
-
-        NpcPositionDistance npcPositionDistance = GetNpcPositionDistance(localPosition, npc);
-
-        return IsInFieldOfView(localPosition, npcPositionDistance.position) && npcPositionDistance.distance <= weaponRange;
+        return CanAttack(Arrays.asList(source), npc.getArea().getTiles(), weaponRange);
     }
 
     public static Position GetClosestPosition(Position source, Area destination)
