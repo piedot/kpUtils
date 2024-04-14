@@ -126,6 +126,7 @@ public class ObjectPathFinder
                 {
                     if (neighbor.equals(destination)) // Found
                     {
+                        nodeMap.remove(start);
                         Position tracer = destination;
                         Node node;
 
@@ -133,7 +134,7 @@ public class ObjectPathFinder
                         {
                             node = nodeMap.get(tracer);
 
-                            if (node == null || tracer.equals(start)) // todo no .equals(start) ?
+                            if (node == null)
                             {
                                 break;
                             }
