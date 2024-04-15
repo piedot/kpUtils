@@ -83,7 +83,7 @@ public class kpPrayer
         }
     }
 
-    public static List<Prayer> GetOffensivePrayers()
+    public static List<Prayer> GetOffensivePrayers(boolean includeDefensive)
     {
         List<Prayer> returnList = new ArrayList<>();
 
@@ -101,6 +101,7 @@ public class kpPrayer
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.ULTIMATE_STRENGTH) && Prayers.isActive(Prayer.Modern.INCREDIBLE_REFLEXES))
                 {
+                    if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
                     returnList.add(Prayer.Modern.ULTIMATE_STRENGTH);
                     returnList.add(Prayer.Modern.INCREDIBLE_REFLEXES);
                 }
@@ -117,6 +118,7 @@ public class kpPrayer
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.EAGLE_EYE))
                 {
+                    if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
                     returnList.add(Prayer.Modern.EAGLE_EYE);
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.HAWK_EYE))
@@ -136,6 +138,7 @@ public class kpPrayer
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.MYSTIC_MIGHT))
                 {
+                    if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
                     returnList.add(Prayer.Modern.MYSTIC_MIGHT);
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.MYSTIC_LORE))
