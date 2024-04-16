@@ -1,5 +1,6 @@
 package utils;
 
+import org.rspeer.commons.logging.Log;
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.component.Item;
 
@@ -42,6 +43,7 @@ public class kpInventory
             stackCount = Inventories.backpack().query().ids(itemIds).filter(i -> i.isNoted() == noted).results().first().getStackSize();
         }
 
+        Log.info("GetCount " + inventoryCount + " - " + stackCount);
         return Math.max(inventoryCount, stackCount);
     }
 }

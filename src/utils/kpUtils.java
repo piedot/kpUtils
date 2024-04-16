@@ -493,11 +493,10 @@ public class kpUtils
             return false;
 
         List<Position> meleeTiles = GetMeleeTiles(sceneObject.getPosition(), width, height);
-        Position destination = Movement.getDestination();
 
         for (Position position : meleeTiles) // You can only interact with an object from its "melee tiles"
         {
-            if (position.equals(localPosition) || position.equals(destination))
+            if (position.equals(localPosition) || position.equals(Movement.getDestination()))
             {
                 Log.info("Interacting with object " + sceneObject.getName());
                 return true;
@@ -526,11 +525,9 @@ public class kpUtils
         if (localPosition == null)
             return false;
 
-        Position destination = Movement.getDestination();
-
         Position pickablePosition = pickable.getPosition();
 
-        if (pickablePosition.equals(destination) || pickablePosition.equals(localPosition))
+        if (pickablePosition.equals(Movement.getDestination()))
             return true;
 
         return false;
