@@ -99,7 +99,7 @@ public class kpPrayer
                 {
                     returnList.add(Prayer.Modern.CHIVALRY);
                 }
-                else if (Prayers.isUnlocked(Prayer.Modern.ULTIMATE_STRENGTH) && Prayers.isActive(Prayer.Modern.INCREDIBLE_REFLEXES))
+                else if (Prayers.isUnlocked(Prayer.Modern.ULTIMATE_STRENGTH) && Prayers.isUnlocked(Prayer.Modern.INCREDIBLE_REFLEXES))
                 {
                     if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
                     returnList.add(Prayer.Modern.ULTIMATE_STRENGTH);
