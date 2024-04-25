@@ -532,4 +532,31 @@ public class kpUtils
 
         return false;
     }
+
+    /**
+     * Same formatting as OSRS
+     */
+    public static String FormatOSRSValue(long value)
+    {
+        if (value >= 10_000_000) // 10M
+        {
+            return (value / 1000000) + "M";
+        }
+        else if (value >= 10_000) // 10K
+        {
+            return (value / 1000) + "K";
+        }
+        else
+        {
+            return String.valueOf(value);
+        }
+    }
+
+    public static String FormatValueForMillions(long value)
+    {
+        double millions = value / 1000000.0;
+        return String.format("%.2fM", millions);
+    }
+
+
 }

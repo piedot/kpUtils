@@ -24,8 +24,6 @@ public class kpMovement
 
     public static void WalkTo(SceneNode destination)
     {
-        ActivateRunEnergy(11);
-
         if (IsMoving())
         {
             Log.info("WalkTo - We are moving");
