@@ -27,7 +27,7 @@ public class kpUtils
     {
         int x = tile.getX();
         int y = tile.getY();
-        return Area.rectangular(x - size, y - size, x + size, y + size, tile.level);
+        return Area.rectangular(x - size, y - size, x + size, y + size, tile.getFloorLevel());
     }
 
     public static double DistanceTo(Area area, Position destination)
@@ -80,7 +80,7 @@ public class kpUtils
 
         for (Position offset : offsets)
         {
-            returnTiles.add(new Position(base.getX() + offset.getX(), base.getY() + offset.getY(), base.level));
+            returnTiles.add(new Position(base.getX() + offset.getX(), base.getY() + offset.getY(), base.getFloorLevel()));
         }
 
         return returnTiles;
