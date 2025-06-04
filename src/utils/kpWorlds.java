@@ -67,9 +67,16 @@ public class kpWorlds
                         break;
                     }
                     case DE:
+                    {
+                        if (!worldLocation.equals(World.Location.DE))
+                        {
+                            return false;
+                        }
+                        break;
+                    }
                     case UK:
                     {
-                        if (!worldLocation.equals(World.Location.DE) && !worldLocation.equals(World.Location.UK))
+                        if (!worldLocation.equals(World.Location.UK))
                         {
                             return false;
                         }
