@@ -116,6 +116,14 @@ public class kpPrayer
                 {
                     returnList.add(Prayer.Modern.RIGOUR);
                 }
+                else if (Prayers.isUnlocked(Prayer.Modern.DEADEYE))
+                {
+                    // From the wiki:
+                    // Deadeye and Mystic Vigour are the only two prayers that provide a defence boost that can be used alongside prayers with a defence boost,
+                    // such as Thick Skin, Rock Skin, or Steel Skin. The defence boost with multiple prayers is additive.
+                    if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
+                    returnList.add(Prayer.Modern.DEADEYE);
+                }
                 else if (Prayers.isUnlocked(Prayer.Modern.EAGLE_EYE))
                 {
                     if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
@@ -135,6 +143,12 @@ public class kpPrayer
                 if (Prayers.isUnlocked(Prayer.Modern.AUGURY))
                 {
                     returnList.add(Prayer.Modern.AUGURY);
+                }
+                else if (Prayers.isUnlocked(Prayer.Modern.MYSTIC_VIGOUR))
+                {
+                    // See DEADEYE for defence prayer explendation even though mystic_vigour provides a defence boost
+                    if (includeDefensive) returnList.add(Prayer.Modern.STEEL_SKIN);
+                    returnList.add(Prayer.Modern.MYSTIC_VIGOUR);
                 }
                 else if (Prayers.isUnlocked(Prayer.Modern.MYSTIC_MIGHT))
                 {
