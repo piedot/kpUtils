@@ -3,19 +3,24 @@ package utils;
 import jag.game.scene.RSCollisionMap;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
+import org.rspeer.commons.math.DistanceEvaluator;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.InterfaceComponent;
 import org.rspeer.game.adapter.scene.*;
+import org.rspeer.game.adapter.type.Interactable;
 import org.rspeer.game.adapter.type.SceneNode;
 import org.rspeer.game.combat.Combat;
 import org.rspeer.game.component.Interfaces;
 import org.rspeer.game.component.tdi.Tab;
 import org.rspeer.game.component.tdi.Tabs;
+import org.rspeer.game.effect.Direction;
 import org.rspeer.game.movement.Movement;
+import org.rspeer.game.movement.pathfinding.Collisions;
 import org.rspeer.game.movement.pathfinding.util.CollisionFlags;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
+import org.rspeer.game.scene.Scene;
 
 import java.util.*;
 
@@ -438,9 +443,28 @@ public class kpUtils
         return closestPosition;
     }
 
+    public static Position GetClosestPosition(Position source, Collection<Position> destination)
+    {
+        double lowestDistance = Double.MAX_VALUE;
+        Position closestPosition = null;
+
+        for (Position position : destination)
+        {
+            double distance = source.distance(Distance.EUCLIDEAN, position);
+
+            if (distance < lowestDistance)
+            {
+                lowestDistance = distance;
+                closestPosition = position;
+            }
+        }
+
+        return closestPosition;
+    }
+
     public static Area GetAreaFrom(Position position, int width, int height)
     {
-        return Area.rectangular(position, new Position(position.getX() + width, position.getY() + height));
+        return Area.rectangular(position, new Position(position.getX() + width, position.getY() + height, position.getFloorLevel()));
     }
 
     public static List<Position> GetMeleeTiles(Position entityPosition, int entityWidth, int entityHeight)
@@ -533,6 +557,34 @@ public class kpUtils
         return false;
     }
 
+    public static Position GetClosestMeleeTile(SceneNode sceneNode)
+    {
+        if (sceneNode == null)
+            return null;
+
+        Position closestPosition = null;
+        double bestChebyshev = Double.MAX_VALUE;
+        double bestEuclidean = Double.MAX_VALUE;
+
+        for (Position pos : GetMeleeTiles(sceneNode.getPosition(), sceneNode.getEntityPositionWidth(), sceneNode.getEntityPositionHeight()))
+        {
+            if (!Collisions.isReachable(pos))
+                continue;
+
+            double chebyshev = pos.distance(Distance.CHEBYSHEV);
+            double euclidean = pos.distance(Distance.EUCLIDEAN);
+
+            if (chebyshev < bestChebyshev || (chebyshev == bestChebyshev && euclidean < bestEuclidean))
+            {
+                bestChebyshev = chebyshev;
+                bestEuclidean = euclidean;
+                closestPosition = pos;
+            }
+        }
+
+        return closestPosition;
+    }
+
     /**
      * Same formatting as OSRS
      */
@@ -558,5 +610,152 @@ public class kpUtils
         return String.format("%.2fM", millions);
     }
 
+    public static Area GetAttackableArea(Npc npc, int playerRange)
+    {
+        if (npc == null)
+            return null;
 
+        playerRange -= 1; // todo figure out why
+
+        Position npcSWPosition = npc.getPosition();
+        int npcWidth = npc.getEntityPositionWidth();
+        int npcHeight = npc.getEntityPositionHeight();
+        return Area.rectangular(
+                npcSWPosition.getX() - playerRange,
+                npcSWPosition.getY() - playerRange,
+                npcSWPosition.getX() + npcWidth + playerRange,
+                npcSWPosition.getY() + npcHeight + playerRange,
+                npcSWPosition.getFloorLevel()
+        );
+    }
+
+    public static List<Position> GetPositionsIn(Position from, Direction toDirection, int amount)
+    {
+        return GetPositionsIn(from, toDirection, amount, false);
+    }
+
+    /**
+     * Gets a list of positions in a certain direction from a starting position.
+     * @param from original position
+     * @param toDirection direction to translate the positions in
+     * @param amount number of positions to translate
+     * @param includeStartingPosition if true, the starting position will be included in the list
+     * @return
+     */
+    public static List<Position> GetPositionsIn(Position from, Direction toDirection, int amount, boolean includeStartingPosition)
+    {
+        List<Position> translatedPositions = new ArrayList<>();
+        int xOffset = toDirection.getXOffset();
+        int yOffset = toDirection.getYOffset();
+        if (includeStartingPosition)
+        {
+            translatedPositions.add(from);
+        }
+        for (int i = 1; i < amount; i++)
+        {
+            translatedPositions.add(from.translate(xOffset * i, yOffset * i));
+        }
+        return translatedPositions;
+    }
+
+    public static Direction GetOpposite(Direction direction)
+    {
+        switch (direction)
+        {
+            case NORTH:
+                return Direction.SOUTH;
+            case SOUTH:
+                return Direction.NORTH;
+            case EAST:
+                return Direction.WEST;
+            case WEST:
+                return Direction.EAST;
+            case NORTH_EAST:
+                return Direction.SOUTH_WEST;
+            case NORTH_WEST:
+                return Direction.SOUTH_EAST;
+            case SOUTH_EAST:
+                return Direction.NORTH_WEST;
+            case SOUTH_WEST:
+                return Direction.NORTH_EAST;
+            default:
+                return null; // Invalid direction
+        }
+    }
+
+    /**
+     * Converts a position to a scene position by subtracting the scene base position.
+     *
+     * @param position The position to convert.
+     * @return The converted scene position.
+     */
+    public static Position GetScenePosition(Position position)
+    {
+        Position sceneBase = Scene.getBase();
+        return Position.from(
+                position.getX() - sceneBase.getX(),
+                position.getY() - sceneBase.getY(),
+                position.getFloorLevel()
+        );
+    }
+
+    /**
+     * Converts a scene position to a global position by adding the scene base position.
+     *
+     * @param scenePosition The scene position to convert.
+     * @return The converted global position.
+     */
+    public static Position GetGlobalPosition(Position scenePosition)
+    {
+        Position sceneBase = Scene.getBase();
+        return Position.from(
+                sceneBase.getX() + scenePosition.getX(),
+                sceneBase.getY() + scenePosition.getY(),
+                sceneBase.getFloorLevel()
+        );
+    }
+
+    public static boolean SafeInteractWith(SceneObject sceneObject, String action)
+    {
+        if (sceneObject == null)
+        {
+            Log.info("Scene object is null, cannot safe interact.");
+            return false;
+        }
+
+        if (IsInteractingWith(sceneObject))
+        {
+            Log.info("Already safe interacting with " + sceneObject.getName());
+            return true;
+        }
+
+        if (!sceneObject.getActions().contains(action))
+        {
+            Log.warn("Action '" + action + "' not available for " + sceneObject.getName() + ". Available actions: " + sceneObject.getActions());
+            return false;
+        }
+
+        Log.info("Safe interacting with " + sceneObject.getName() + " action " + action);
+        sceneObject.interact(action);
+        return true;
+    }
+
+    public static boolean SafeInteractWith(Pickable pickable)
+    {
+        if (pickable == null)
+        {
+            Log.info("Pickable is null, cannot safe interact.");
+            return false;
+        }
+
+        if (IsInteractingWith(pickable))
+        {
+            Log.info("Already safe interacting with " + pickable.getName());
+            return true;
+        }
+
+        Log.info("Safe interacting with pickable " + pickable.getName());
+        pickable.interact("Take");
+        return true;
+    }
 }

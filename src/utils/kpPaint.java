@@ -5,6 +5,7 @@ import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Projection;
 
 import java.awt.*;
+import java.util.Collection;
 
 public class kpPaint
 {
@@ -52,7 +53,7 @@ public class kpPaint
 
         // Fill
 
-        g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 24));
+        g2d.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 32));
         g2d.fillPolygon(positionPolygon);
         g2d.setColor(color);
 
@@ -215,7 +216,31 @@ public class kpPaint
             if (point <= 0)
                 return false;
         }
-
         return true;
+    }
+
+    public static void DrawTiles(Graphics2D g2d, Collection<Position> positions, Color color)
+    {
+        DrawTiles(g2d, positions, color, false);
+    }
+
+    public static void DrawTiles(Graphics2D g2d, Collection<Position> positions, Color color, boolean drawPositionText)
+    {
+        for (Position position : positions)
+        {
+            if (position == null)
+                continue;
+
+            if (drawPositionText)
+            {
+                DrawTileLabel(g2d, position, position.getX() + ", " + position.getY(), color, true);
+            }
+            else
+            {
+                DrawTile(g2d, position, color);
+            }
+        }
+
+        return;
     }
 }
