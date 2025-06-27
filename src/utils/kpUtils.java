@@ -73,10 +73,12 @@ public class kpUtils
 
     public static Position GetInstancePosition(Position globalPosition)
     {
-        return globalPosition.getInstancePositions().stream()
-                .filter(x -> x.getFloorLevel() == globalPosition.getFloorLevel())
-                .min(Comparator.comparingInt(x -> (int) x.distance(Players.self())))
-                .orElse(globalPosition);
+        List<Position> instancePositions = globalPosition.getInstancePositions();
+        return instancePositions.size() == 0 ? globalPosition : instancePositions.get(0);
+        //return globalPosition.getInstancePositions().stream()
+        //        .filter(x -> x.getFloorLevel() == globalPosition.getFloorLevel())
+        //        .min(Comparator.comparingInt(x -> (int) x.distance(Players.self())))
+        //        .orElse(globalPosition);
     }
 
     public static ArrayList<Position> GetTilesFromOffsets(Position base, List<Position> offsets)
