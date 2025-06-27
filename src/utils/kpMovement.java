@@ -48,6 +48,23 @@ public class kpMovement
         return;
     }
 
+    public static void StepWalk(SceneNode destination)
+    {
+        ActivateRunEnergy(12);
+
+        if (destination.equals(Movement.getDestination()))
+        {
+            Log.info("StepWalk - We are already stepping to the destination");
+            return;
+        }
+
+        Log.info("Stepping to [" + destination.getX() + ", " + destination.getY() + "]");
+
+        Movement.walkTowards(destination);
+
+        return;
+    }
+
     public static boolean IsMoving()
     {
         Player localPlayer = Players.self();

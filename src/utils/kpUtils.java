@@ -161,7 +161,7 @@ public class kpUtils
     }
 
     // e.g. entering an instance, when your screen fades black
-    // works with: Scurrius
+    // works with: Scurrius, TOA, CG
     // doesn't work with: The whisperer blackstone
     public static boolean IsFadingBlack()
     {
@@ -476,6 +476,50 @@ public class kpUtils
         List<Position> meleeTiles = new ArrayList<>();
 
         for (int x = 0; x < entityWidth; x++)
+        {
+            int entityX = entityPositionX + x;
+
+            meleeTiles.add(new Position(entityX, entityPositionY - 1, entityPositionLevel));
+            meleeTiles.add(new Position(entityX, entityPositionY + entityHeight, entityPositionLevel));
+        }
+
+        for (int y = 0; y < entityHeight; y++)
+        {
+            int entityY = entityPositionY + y;
+
+            meleeTiles.add(new Position(entityPositionX - 1, entityY, entityPositionLevel));
+            meleeTiles.add(new Position(entityPositionX + entityWidth, entityY, entityPositionLevel));
+        }
+
+        return meleeTiles;
+    }
+
+    public static List<Position> GetMeleeTiles(SceneNode entity)
+    {
+        if (entity == null)
+            return Collections.emptyList();
+
+        return GetMeleeTiles(entity.getPosition(), entity.getEntityPositionWidth(), entity.getEntityPositionHeight());
+    }
+
+    /**
+     *
+     * @param entity the entity to get the outer tiles for
+     * @return The outer ring around the entity, basically melee tiles + the corners
+     */
+    public static List<Position> GetOuterTiles(SceneNode entity)
+    {
+        Position entityPosition = entity.getPosition();
+        int entityWidth = entity.getEntityPositionWidth();
+        int entityHeight = entity.getEntityPositionHeight();
+
+        int entityPositionX = entityPosition.getX();
+        int entityPositionY = entityPosition.getY();
+        int entityPositionLevel = entityPosition.getFloorLevel();
+
+        List<Position> meleeTiles = new ArrayList<>();
+
+        for (int x = -1; x < entityWidth + 1; x++)
         {
             int entityX = entityPositionX + x;
 

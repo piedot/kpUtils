@@ -2,6 +2,7 @@ package pathing;
 
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.position.Position;
+import utils.kpPathing;
 
 import java.util.*;
 
@@ -16,6 +17,7 @@ public class piePathFinder
     private Map<Position, Integer> scoreMap; // Map of positions with their scores, lower is better
     private Set<Position> walkablePositions; // These are the ONLY positions we can use in the pathfinding
     private List<Position> path; // The resulting path from start to destination, if found
+    private List<Position> oldPath = new ArrayList<>();
 
     // 5x5, from -2, -2 to 2, 2
     private final List<Position> directions = List.of(
@@ -284,6 +286,29 @@ public class piePathFinder
         }
 
         path = totalPath;
+
+        boolean isOldPathValid = true;
+        for (Position position : oldPath)
+        {
+            if (!path.contains(position))
+            {
+                isOldPathValid = false;
+                break;
+            }
+        }
+
+        if (isOldPathValid && !oldPath.isEmpty())
+        {
+            // If the old path is still valid, we should use it to avoid getting stuck between two positions
+            Log.debug("piePathFinder: Using old path as fallback.");
+            path = oldPath;
+        }
+        else
+        {
+            Log.debug("piePathFinder: New path calculated, replacing old path.");
+        }
+
+        oldPath = totalPath;
     }
 
     private double heuristic(Position a, Position b)
@@ -302,6 +327,15 @@ public class piePathFinder
     private List<Position> getNeighbors(Position position)
     {
         List<Position> neighbors = new ArrayList<>();
+        //for (Position direction : directions)
+        //{
+        //    if (kpPathing.IsSingleSteppable(position, direction, walkablePositions))
+        //    {
+        //        Position neighbor = position.translate(direction.getX(), direction.getY());
+        //        neighbors.add(neighbor);
+        //    }
+        //}
+
         for (int i = 0; i < directions.size(); i++)
         {
             Position direction = directions.get(i);
@@ -311,6 +345,7 @@ public class piePathFinder
             Position neighbor = position.translate(directionX, directionY);
             boolean isClear = true;
 
+            // Only check for collision on tiles that are not directly adjacent since it is guaranteed that we can step on them in one tick
             if (directionX > 1 || directionX < -1 || directionY > 1 || directionY < -1)
             {
                 List<Position> positionsThatNeedToBeClearForThisPosition = positionsThatNeedToBeClear.get(i);
@@ -333,14 +368,14 @@ public class piePathFinder
             }
         }
 
-        //for (Position direction : directions)
-        //{
-        //    Position neighbor = new Position(position.getX() + direction.getX(), position.getY() + direction.getY());
-        //    if (walkablePositions.contains(neighbor))
-        //    {
-        //        neighbors.add(neighbor);
-        //    }
-        //}
+        for (Position direction : directions)
+        {
+            Position neighbor = new Position(position.getX() + direction.getX(), position.getY() + direction.getY());
+            if (walkablePositions.contains(neighbor))
+            {
+                neighbors.add(neighbor);
+            }
+        }
 
         return neighbors;
     }
