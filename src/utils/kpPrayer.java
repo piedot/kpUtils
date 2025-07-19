@@ -7,6 +7,7 @@ import org.rspeer.game.movement.Movement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class kpPrayer
 {
@@ -58,6 +59,30 @@ public class kpPrayer
             if (shouldDisable)
             {
                 Prayers.select(true, activePrayer);
+            }
+        }
+    }
+
+    public static void Enable(Set<Prayer> prayers)
+    {
+        for (Prayer prayer : prayers)
+        {
+            if (!Prayers.isActive(prayer))
+            {
+                Log.info("Enabling " + prayer.toString());
+                Prayers.select(true, prayer);
+            }
+        }
+    }
+
+    public static void Enable(List<Prayer> prayers)
+    {
+        for (Prayer prayer : prayers)
+        {
+            if (!Prayers.isActive(prayer))
+            {
+                Log.info("Enabling " + prayer.toString());
+                Prayers.select(true, prayer);
             }
         }
     }

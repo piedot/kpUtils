@@ -12,7 +12,7 @@ public class kpMovement
     {
         boolean shouldEnableRunEnergy = Movement.getRunEnergy() >= at;
 
-        Log.info("ActivateRunEnergy(" + shouldEnableRunEnergy + ")");
+        //Log.debug("ActivateRunEnergy(" + shouldEnableRunEnergy + ")");
 
         if (!Movement.isRunEnabled() && shouldEnableRunEnergy)
         {
@@ -50,8 +50,6 @@ public class kpMovement
 
     public static void StepWalk(SceneNode destination)
     {
-        ActivateRunEnergy(12);
-
         if (destination.equals(Movement.getDestination()))
         {
             Log.info("StepWalk - We are already stepping to the destination");

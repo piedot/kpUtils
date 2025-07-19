@@ -45,47 +45,9 @@ public class kpWorlds
             .filter(w ->
                     members == w.getFlags().contains(World.Flag.MEMBERS)
             )
-            .filter(w -> {
-                World.Location worldLocation = w.getLocation();
-
-                switch (currentWorld.getLocation())
-                {
-                    case AU:
-                    {
-                        if (!worldLocation.equals(World.Location.AU))
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                    case US:
-                    {
-                        if (!worldLocation.equals(World.Location.US))
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                    case DE:
-                    {
-                        if (!worldLocation.equals(World.Location.DE))
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                    case UK:
-                    {
-                        if (!worldLocation.equals(World.Location.UK))
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                }
-
-                return true;
-            })
+            .filter(w -> // Stay in the same region
+                    w.getLocation().equals(currentWorld.getLocation())
+            )
             .filter(w -> {
                 if (w.getFlags().contains(World.Flag.SKILL_TOTAL))
                 {

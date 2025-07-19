@@ -1,17 +1,32 @@
 package utils;
 
-import org.rspeer.commons.PriceCheck;
+import Main.OnTick;
 import org.rspeer.commons.logging.Log;
+import org.rspeer.game.Definitions;
+import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.StockMarketTransaction;
 import org.rspeer.game.adapter.component.StockMarketable;
+import org.rspeer.game.adapter.component.inventory.Bank;
+import org.rspeer.game.adapter.definition.ItemDefinition;
 import org.rspeer.game.adapter.scene.Player;
+import org.rspeer.game.component.Inventories;
+import org.rspeer.game.component.Item;
 import org.rspeer.game.component.stockmarket.StockMarket;
+import org.rspeer.game.config.item.entry.ItemEntry;
+import org.rspeer.game.config.item.entry.builder.ItemEntryBuilder;
+import org.rspeer.game.config.item.entry.setup.ItemEntrySetup;
+import org.rspeer.game.config.item.loadout.BackpackLoadout;
 import org.rspeer.game.movement.Movement;
+import org.rspeer.game.movement.pathfinding.Pathing;
+import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
+import org.rspeer.game.script.Task;
+import org.rspeer.game.web.Web;
 
 public class kpGrandExchange
 {
+    private static final Position grandExchangePosition = Position.from(3162, 3489, 0); //
     private static Area grandExchangeArea = Area.rectangular(3161, 3486, 3168, 3493, 0);
 
     public static boolean Open()
@@ -116,7 +131,7 @@ public class kpGrandExchange
 
     public static int GetMultiplierPrice(int itemId, int quantity)
     {
-        int singularItemPrice = PriceCheck.lookup(itemId).getAverage();
+        int singularItemPrice = kpPrice.Get(itemId);
         double totalItemsPrice = singularItemPrice * quantity;
 
         if (totalItemsPrice < 0)
@@ -148,5 +163,4 @@ public class kpGrandExchange
 
         return singularItemPrice;
     }
-
 }

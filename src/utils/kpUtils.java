@@ -1,16 +1,27 @@
 package utils;
 
+import Main.OnTick;
 import jag.game.scene.RSCollisionMap;
+import org.rspeer.commons.discord.DiscordWebhook;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
-import org.rspeer.commons.math.DistanceEvaluator;
+import org.rspeer.commons.math.Random;
+import org.rspeer.game.Definitions;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.InterfaceComponent;
+import org.rspeer.game.adapter.component.StockMarketable;
+import org.rspeer.game.adapter.component.inventory.Bank;
+import org.rspeer.game.adapter.definition.ItemDefinition;
 import org.rspeer.game.adapter.scene.*;
-import org.rspeer.game.adapter.type.Interactable;
 import org.rspeer.game.adapter.type.SceneNode;
 import org.rspeer.game.combat.Combat;
 import org.rspeer.game.component.Interfaces;
+import org.rspeer.game.component.Inventories;
+import org.rspeer.game.component.Item;
+import org.rspeer.game.component.Trade;
+import org.rspeer.game.component.stockmarket.StockMarket;
+import org.rspeer.game.component.tdi.Magic;
+import org.rspeer.game.component.tdi.Settings;
 import org.rspeer.game.component.tdi.Tab;
 import org.rspeer.game.component.tdi.Tabs;
 import org.rspeer.game.effect.Direction;
@@ -21,8 +32,14 @@ import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
 import org.rspeer.game.scene.Scene;
+import org.rspeer.game.script.Script;
+import org.rspeer.game.script.meta.ScriptConfig;
+import org.rspeer.game.service.stockmarket.StockMarketEntry;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class kpUtils
 {
@@ -79,6 +96,18 @@ public class kpUtils
         //        .filter(x -> x.getFloorLevel() == globalPosition.getFloorLevel())
         //        .min(Comparator.comparingInt(x -> (int) x.distance(Players.self())))
         //        .orElse(globalPosition);
+    }
+
+    public static List<Position> GetInstancePositions(List<Position> globalPositions)
+    {
+        List<Position> instancePositions = new ArrayList<>();
+
+        for (Position globalPosition : globalPositions)
+        {
+            instancePositions.add(GetInstancePosition(globalPosition));
+        }
+
+        return instancePositions;
     }
 
     public static ArrayList<Position> GetTilesFromOffsets(Position base, List<Position> offsets)
@@ -383,8 +412,8 @@ public class kpUtils
 
         int x = npcPosition.getX();
         int y = npcPosition.getY();
-        int width = npc.getEntityPositionWidth();
-        int height = npc.getEntityPositionHeight();
+        int width = npc.getEntityPositionWidth() - 1;
+        int height = npc.getEntityPositionHeight() - 1;
 
         Position[] threeCorners = new Position[]{new Position(x + width, y), new Position(x + width, y + height), new Position(x, y + height)};
 
@@ -661,7 +690,7 @@ public class kpUtils
         if (npc == null)
             return null;
 
-        playerRange -= 1; // todo figure out why
+        playerRange -= 1;
 
         Position npcSWPosition = npc.getPosition();
         int npcWidth = npc.getEntityPositionWidth();
@@ -802,6 +831,201 @@ public class kpUtils
 
         Log.info("Safe interacting with pickable " + pickable.getName());
         pickable.interact("Take");
+        return true;
+    }
+
+    private static int cachedNumber = -1;
+    public static int GetNameHashRandomNumber()
+    {
+        if (cachedNumber != -1)
+        {
+            //
+            return cachedNumber;
+        }
+
+        Player self = Players.self();
+        String name = self != null ? self.getName() : "DogaIsCuteUwU";
+        if (name == null)
+        {
+            return 234984324; // Random fallback value
+        }
+        int hash = name.hashCode();
+        cachedNumber = hash;
+        return hash;
+    }
+
+    /**
+     * Generates a random number between min and max based on the player's name hash.
+     * @param min minimum value (inclusive)
+     * @param max maximum value (inclusive)
+     * @return a number in the range [min, max]
+     */
+    public static int GetNameHashRandomNumberBetween(int min, int max)
+    {
+        int hash = GetNameHashRandomNumber();
+        int range = max - min + 1;
+        return (hash % range) + min;
+    }
+
+    /**
+     *
+     * @param itemName
+     * @param noted
+     * @return -1 if no item definition found, the id otherwise
+     */
+    public static int GetItemId(String itemName, boolean noted)
+    {
+        ItemDefinition itemDefinition = Definitions.getItem(itemName, i -> i.isNoted() == noted && !i.isPlaceholder());
+
+        if (itemDefinition == null)
+        {
+            Log.warn("No definition for item " + itemName);
+            return -1;
+        }
+
+        return itemDefinition.getId();
+    }
+
+    public static Item GetItem(String itemName, boolean withdrawAll, int minQuantity, int buyQuantity, boolean noted, StockMarketService stockMarketService)
+    {
+        int itemId = GetItemId(itemName, noted);
+
+        if (itemId == -1)
+        {
+            Log.warn("No item id for item (GetItem) " + itemName);
+            return null;
+        }
+
+        return GetItem(new int[]{itemId}, withdrawAll, minQuantity, buyQuantity, noted, stockMarketService);
+    }
+
+    public static Item GetItem(int[] itemIds, boolean withdrawAll, int minQuantity, int buyQuantity, boolean noted, StockMarketService stockMarketService)
+    {
+        int[] modifiedItemIds = itemIds.clone(); // If we prefer noted, these will be the noted ones, so don't use these for banking/buying
+
+        if (noted)
+        {
+            for (int i = 0; i < itemIds.length; i++)
+            {
+                ItemDefinition definition = Definitions.getItem(itemIds[i]);
+                if (definition == null)
+                {
+                    Log.warn("No definition for item " + itemIds[i]);
+                    continue;
+                }
+                modifiedItemIds[i] = definition.getNotedId();
+            }
+        }
+
+        Item inventoryItem = Inventories.backpack().query().ids(modifiedItemIds).results().random();
+
+        if (inventoryItem != null && kpInventory.GetCount(modifiedItemIds, noted) >= minQuantity)
+        {
+            return inventoryItem;
+        }
+
+        if (!kpBank.Open(Bank.Location.getNearestWithdrawable()))
+        {
+            Log.info("GetItem - Opening bank");
+            return null;
+        }
+
+        Item bankItem = Inventories.bank().query().ids(itemIds).results().random();
+
+        if (bankItem == null)
+        {
+            Log.info("GetItem - Bank does not contain " + Arrays.toString(itemIds) + ", submitting buy request");
+
+            if (stockMarketService == null)
+            {
+                Log.severe("No " + Arrays.toString(itemIds) + " found in bank and no stockMarketService provided, skipping buy");
+                return null;
+            }
+
+            int inventoryItemCount = kpInventory.GetCount(modifiedItemIds, noted);
+
+            StockMarketEntry stockMarketEntry = new StockMarketEntry(itemIds[0], buyQuantity - inventoryItemCount, -3); // +5%
+
+            stockMarketService.submit(StockMarketable.Type.BUY, stockMarketEntry);
+            return null;
+        }
+
+        Log.info("GetItem - Withdrawing all itemId " + Arrays.toString(itemIds) + " from bank");
+        if (withdrawAll)
+        {
+            kpBank.Withdraw(itemIds, Integer.MAX_VALUE, noted);
+        }
+        else
+        {
+            kpBank.Withdraw(itemIds, minQuantity, noted);
+        }
+
+        return null;
+    }
+
+    public static void SendDiscordWebHook(String scriptName, String title, String text, Color color, String webhookURL)
+    {
+        if (webhookURL == null || webhookURL.isBlank())
+        {
+            Log.debug("No webhook URL provided, skipping Discord webhook");
+        }
+
+        Player self = Players.self();
+
+        DiscordWebhook.Embed embed = new DiscordWebhook.Embed.Builder()
+                .setTitle(title)
+                .setColor(color)
+                .addField(self.getName() + " running " + scriptName, text, true)
+                .setFooter("inubot.com", "https://i.imgur.com/R7fXf1Y.png")
+                .build();
+
+        DiscordWebhook webhook = new DiscordWebhook.Builder(webhookURL)
+                .setUsername(scriptName)
+                .addEmbed(embed)
+                .build();
+
+        try
+        {
+            webhook.post();
+        }
+        catch (Exception e)
+        {
+            Log.severe("Failed to send Discord webhook " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean IsInterfaceOpen()
+    {
+        return !Interfaces.getSubs().isEmpty();
+    }
+
+    public static boolean CloseInterfacesIfNeeded()
+    {
+        if (IsInterfaceOpen())
+        {
+            Log.info("Closing interfaces");
+            Interfaces.closeSubs();
+            return true;
+        }
+
+        return false;
+    }
+
+    public static void SetSetting(ScriptConfig config, Settings.Option option, boolean enabled)
+    {
+        int value = enabled ? option.getEnabledValue() : (option.getEnabledValue() == 1 ? 0 : 1); //sometimes enabled = 0, other times enabled = 1
+        config.put(option.name(), value);
+    }
+
+    public static boolean CanFullyReach(SceneObject sceneObject)
+    {
+        for (Position meleePosition : GetMeleeTiles(sceneObject))
+        {
+            if (!Collisions.isReachable(meleePosition))
+                return false;
+        }
+
         return true;
     }
 }
