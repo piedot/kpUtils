@@ -790,6 +790,12 @@ public class kpUtils
         );
     }
 
+    /**
+     *
+     * @param sceneObject
+     * @param action
+     * @return
+     */
     public static boolean SafeInteractWith(SceneObject sceneObject, String action)
     {
         if (sceneObject == null)
@@ -815,6 +821,11 @@ public class kpUtils
         return true;
     }
 
+    /**
+     *
+     * @param pickable
+     * @return
+     */
     public static boolean SafeInteractWith(Pickable pickable)
     {
         if (pickable == null)
@@ -832,6 +843,47 @@ public class kpUtils
         Log.info("Safe interacting with pickable " + pickable.getName());
         pickable.interact("Take");
         return true;
+    }
+
+    public static boolean SafeTalkWith(Npc npc)
+    {
+        return SafeInteractWith(npc, "Talk-to");
+    }
+
+    /**
+     *
+     * @Warning Could cause issues, us interacting with an npc does not mean we selected the right menu etc, not sure
+     * @param npc
+     * @param action
+     * @return
+     */
+    public static boolean SafeInteractWith(Npc npc, String action)
+    {
+        if (npc == null || action == null || action.isBlank())
+        {
+            Log.info("Npc or action is null, cannot safe interact.");
+            return false;
+        }
+
+        Player localPlayer = Players.self();
+        if (localPlayer == null)
+            return false;
+        PathingEntity<?> target = localPlayer.getTarget();
+        if (target != null && target.equals(npc))
+        {
+            Log.info("Already safe interacting with " + npc.getName() + " action " + action);
+            return true;
+        }
+
+        if (!npc.getActions().contains(action))
+        {
+            Log.warn("Action '" + action + "' not available for " + npc.getName() + ". Available actions: " + npc.getActions());
+            return false;
+        }
+
+        Log.info("Safe interacting with " + npc.getName() + " action " + action);
+        npc.interact(action);
+        return false;
     }
 
     private static int cachedNumber = -1;
@@ -1026,6 +1078,64 @@ public class kpUtils
                 return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Use this for interactions with items in your inventory where interfaces need to be closed
+     * @param item the item you wish to interact with in your inventory
+     * @param action
+     * @return
+     */
+    public static boolean Interact(Item item, String action)
+    {
+        if (item == null || action == null || action.isBlank())
+        {
+            Log.warn("Interact - item or action is null or blank");
+            return false;
+        }
+
+        if (CloseInterfacesIfNeeded())
+        {
+            Log.info("Interact - closing interfaces");
+            return true;
+        }
+
+        List<String> actions = item.getActions();
+
+        if (!actions.contains(action))
+        {
+            Log.warn("Interact - action '" + action + "' not available for " + item.getName() + ". Available actions: " + actions);
+            return false;
+        }
+
+        Log.info("Interact - interacting with " + item.getName() + " action " + action);
+        item.interact(action);
+        return true;
+    }
+
+    /**
+     * Use this if you want to combine items in your inventory and interfaces need to be closed
+     * @param item1 The first item
+     * @param item2 The second item
+     * @return
+     */
+    public static boolean UseOn(Item item1, Item item2)
+    {
+        if (item1 == null || item2 == null)
+        {
+            Log.warn("UseOn - item is null");
+            return false;
+        }
+
+        if (CloseInterfacesIfNeeded())
+        {
+            Log.info("UseOn - closing interfaces");
+            return true;
+        }
+
+        Log.info("Using " + item1.getName() + " on " + item2.getName());
+        Inventories.backpack().use(item1, item2);
         return true;
     }
 }

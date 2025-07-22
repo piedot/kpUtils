@@ -158,23 +158,23 @@ public class kpSpecialAttacks
         SPECIAL_ATTACK_COSTS.put("Zaryte crossbow", 75);
 
         SPECIAL_ATTACK_COSTS.put("Abyssal dagger", 25);
-        SPECIAL_ATTACK_COSTS.put("Abyssal dagger (p)", 25);
-        SPECIAL_ATTACK_COSTS.put("Abyssal dagger (p+)", 25);
-        SPECIAL_ATTACK_COSTS.put("Abyssal dagger (p++)", 25);
+        SPECIAL_ATTACK_COSTS.put("Abyssal dagger(p)", 25);
+        SPECIAL_ATTACK_COSTS.put("Abyssal dagger(p+)", 25);
+        SPECIAL_ATTACK_COSTS.put("Abyssal dagger(p++)", 25);
 
         SPECIAL_ATTACK_COSTS.put("Burning claws", 30);
 
         SPECIAL_ATTACK_COSTS.put("Dragon claws", 50);
 
         SPECIAL_ATTACK_COSTS.put("Dragon dagger", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon dagger (p)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon dagger (p+)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon dagger (p++)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon dagger(p)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon dagger(p+)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon dagger(p++)", 25);
 
         SPECIAL_ATTACK_COSTS.put("Dragon knife", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon knife (p)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon knife (p+)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon knife (p++)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon knife(p)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon knife(p+)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon knife(p++)", 25);
 
         SPECIAL_ATTACK_COSTS.put("Granite maul", 60); // 50 with an ornate handle
 
@@ -190,9 +190,9 @@ public class kpSpecialAttacks
         SPECIAL_ATTACK_COSTS.put("Abyssal tentacle", 50);
 
         SPECIAL_ATTACK_COSTS.put("Dragon spear", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon spear (p)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon spear (p+)", 25);
-        SPECIAL_ATTACK_COSTS.put("Dragon spear (p++)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon spear(p)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon spear(p+)", 25);
+        SPECIAL_ATTACK_COSTS.put("Dragon spear(p++)", 25);
 
         SPECIAL_ATTACK_COSTS.put("Zamorakian hasta", 25);
         SPECIAL_ATTACK_COSTS.put("Zamorakian spear", 25);
@@ -233,6 +233,6 @@ public class kpSpecialAttacks
 
     public static int GetSpecialAttackCost(String itemName)
     {
-        return SPECIAL_ATTACK_COSTS.getOrDefault(itemName, -1);
+        return SPECIAL_ATTACK_COSTS.getOrDefault(itemName, Integer.MAX_VALUE);
     }
 }
