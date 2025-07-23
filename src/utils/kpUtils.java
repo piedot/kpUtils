@@ -993,6 +993,11 @@ public class kpUtils
                 Log.severe("No " + Arrays.toString(itemIds) + " found in bank and no stockMarketService provided, skipping buy");
                 return null;
             }
+            if (!Game.getAccountType().isRegular())
+            {
+                Log.severe("Not a regular account, skipping buy");
+                return null;
+            }
 
             int inventoryItemCount = kpInventory.GetCount(modifiedItemIds, noted);
 
