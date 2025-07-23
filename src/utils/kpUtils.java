@@ -1023,11 +1023,12 @@ public class kpUtils
         }
 
         Player self = Players.self();
+        String accountName = self != null ? self.getName() : "An account";
 
         DiscordWebhook.Embed embed = new DiscordWebhook.Embed.Builder()
                 .setTitle(title)
                 .setColor(color)
-                .addField(self.getName() + " running " + scriptName, text, true)
+                .addField(accountName + " running " + scriptName, text, true)
                 .setFooter("inubot.com", "https://i.imgur.com/R7fXf1Y.png")
                 .build();
 
