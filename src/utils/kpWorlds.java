@@ -89,7 +89,7 @@ public class kpWorlds
     // Could also need to continue the chat or something
     public static boolean Hop(World world)
     {
-        if (StockMarket.isOpen() || Bank.isOpen() || Trade.getView() != Trade.View.CLOSED)
+        if (kpUtils.CloseInterfacesIfNeeded())
         {
             Log.info("kpWorlds - closing interfaces");
             Interfaces.closeSubs();
@@ -100,7 +100,7 @@ public class kpWorlds
 
     public static boolean Hop(int world)
     {
-        if (StockMarket.isOpen() || Bank.isOpen() || Trade.getView() != Trade.View.CLOSED)
+        if (kpUtils.CloseInterfacesIfNeeded())
         {
             Log.info("kpWorlds - closing interfaces");
             Interfaces.closeSubs();
