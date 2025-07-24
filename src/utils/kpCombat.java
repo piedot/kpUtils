@@ -141,9 +141,9 @@ public class kpCombat
         }
 
         int specialEnergy = Combat.getSpecialEnergy();
+        Log.debug("Special energy (" + specialEnergy + "/" + specialEnergyNeeded + ") to spec " + specWeaponName);
         if (specialEnergy < specialEnergyNeeded)
         {
-            Log.debug("Not enough special energy (" + specialEnergy + "/" + specialEnergyNeeded + ") to use " + specWeaponName);
             return SpecialAttackResult.NOT_ENOUGH_SPECIAL_ENERGY;
         }
 
