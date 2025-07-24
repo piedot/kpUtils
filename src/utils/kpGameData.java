@@ -1,6 +1,5 @@
 package utils;
 
-import Bosses.Script;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import data.kpAttackAnimations;
@@ -339,9 +338,6 @@ public class kpGameData
 
     public static void Paint(Graphics2D g2d)
     {
-        if (!Script.DEBUG_MODE)
-            return;
-
         int i = 0;
         kpPaint.DrawString(g2d, "Attack Cooldown: " + canAttackIn,              500, 16 + 16 * i, Color.WHITE); i++;
         //kpPaint.DrawString(g2d, "Weapon Name: " + GetWeaponName(),              500, 16 + 16 * i, Color.WHITE); i++;
