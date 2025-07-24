@@ -14,6 +14,8 @@ import org.rspeer.game.combat.Combat;
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.component.Item;
 import org.rspeer.game.component.tdi.*;
+import org.rspeer.game.config.item.entry.ItemEntry;
+import org.rspeer.game.config.item.loadout.EquipmentLoadout;
 import org.rspeer.game.effect.Health;
 import org.rspeer.game.movement.Movement;
 import org.rspeer.game.position.area.Area;
@@ -119,70 +121,73 @@ public class kpCombat
         FAILED
     }
 
-    public static SpecialAttackResult DoSpecialAttack(Npc npc, String specialAttackWeaponName)
+    public static SpecialAttackResult DoSpecialAttack(Npc npc, EquipmentLoadout specLoadout)
     {
-        if (specialAttackWeaponName == null || specialAttackWeaponName.isEmpty())
+        if (specLoadout == null)
         {
-            Log.warn("No special attack weapon name set");
+            Log.warn("No special attack loadout set");
             return SpecialAttackResult.FAILED;
         }
 
-        int specialEnergyNeeded = kpSpecialAttacks.GetSpecialAttackCost(specialAttackWeaponName);
+        ItemEntry specWeapon = specLoadout.get(Equipment.Slot.MAINHAND);
 
-        if (specialEnergyNeeded == 0 || specialEnergyNeeded == Integer.MAX_VALUE)
+        String specWeaponName = specWeapon != null ? specWeapon.getKey() : "null";
+
+        int specialEnergyNeeded = kpSpecialAttacks.GetSpecialAttackCost(specWeaponName);
+        if (specialEnergyNeeded <= 0 || specialEnergyNeeded == Integer.MAX_VALUE)
         {
-            Log.warn("Failed to get special attack cost for " + specialAttackWeaponName);
+            Log.warn("Failed to get special attack cost for " + specWeaponName);
             return SpecialAttackResult.FAILED;
         }
 
         int specialEnergy = Combat.getSpecialEnergy();
-        if (specialEnergy >= specialEnergyNeeded)
+        if (specialEnergy < specialEnergyNeeded)
         {
-            Item equippedItem = Inventories.equipment().getItemAt(Equipment.Slot.MAINHAND); // Could also be offhand lol, but there is no way anyone is using an offhand spec weapon
-            if (equippedItem == null || !equippedItem.getName().equals(specialAttackWeaponName))
-            {
-                Log.info("Equipping special attack weapon: " + specialAttackWeaponName);
-                Item specWeapon = Inventories.backpack().query().nameContains(specialAttackWeaponName).unnoted().results().first();
-
-                if (specWeapon == null)
-                {
-                    Log.warn("No special attack weapon found in backpack: " + specialAttackWeaponName);
-                    return SpecialAttackResult.FAILED_NO_SPECIAL_ATTACK_WEAPON;
-                }
-
-                if (Inventories.backpack().isFull() &&
-                        Inventories.equipment().getItemAt(Equipment.Slot.OFFHAND) != null &&
-                        kpWeapons.IsTwoHanded(specialAttackWeaponName) &&
-                        !kpWeapons.IsTwoHanded(equippedItem.getName()))
-                {
-                    return SpecialAttackResult.FAILED_2H_WEAPON_NO_SPACE;
-                }
-
-                if (kpUtils.CloseInterfacesIfNeeded())
-                {
-                    Log.info("Closing interfaces for spec");
-                    return SpecialAttackResult.FAILED;
-                }
-
-                kpGameData.SetWeaponName(specialAttackWeaponName);
-                specWeapon.interact("Wield"); // Is wield the only action for weapons?
-                kpGameData.ResetAttack();
-            }
-
-            Log.info("Special attacking");
-
-            if (Combat.isSpecialBarPresent() && !Combat.isSpecialActive())
-            {
-                Log.info("Activating special attack for " + specialAttackWeaponName);
-                Combat.toggleSpecial(true);
-            }
-
-            Attack(npc, true);
-            return SpecialAttackResult.SUCCESS;
+            Log.debug("Not enough special energy (" + specialEnergy + "/" + specialEnergyNeeded + ") to use " + specWeaponName);
+            return SpecialAttackResult.NOT_ENOUGH_SPECIAL_ENERGY;
         }
 
-        Log.debug("Not enough special energy (" + specialEnergy + "/" + specialEnergyNeeded + ") to use " + specialAttackWeaponName);
-        return SpecialAttackResult.NOT_ENOUGH_SPECIAL_ENERGY;
+        Item equippedItem = Inventories.equipment().getItemAt(Equipment.Slot.MAINHAND);
+        if (equippedItem == null || !specWeapon.contained(Inventories.equipment()))
+        {
+            Log.info("Equipping special attack weapon: " + specWeaponName);
+
+            if (!specWeapon.contained(Inventories.backpack()))
+            {
+                Log.warn("No special attack weapon found in backpack: " + specWeaponName);
+                return SpecialAttackResult.FAILED_NO_SPECIAL_ATTACK_WEAPON;
+            }
+
+            if (Inventories.backpack().isFull() &&
+                    Inventories.equipment().getItemAt(Equipment.Slot.OFFHAND) != null &&
+                    kpWeapons.IsTwoHanded(specWeaponName) &&
+                    !kpWeapons.IsTwoHanded(equippedItem.getName()))
+            {
+                return SpecialAttackResult.FAILED_2H_WEAPON_NO_SPACE;
+            }
+
+            if (kpUtils.CloseInterfacesIfNeeded())
+            {
+                Log.info("Closing interfaces for spec");
+                return SpecialAttackResult.FAILED;
+            }
+
+            Log.info("Equipping spec loadout");
+            specLoadout.equip();
+            kpGameData.SetWeaponName(specWeaponName);
+            kpGameData.ResetAttack();
+        }
+
+        Log.info("Special attacking");
+
+        if (Combat.isSpecialBarPresent() && !Combat.isSpecialActive())
+        {
+            Log.info("Activating special attack for " + specWeaponName);
+            Combat.toggleSpecial(true);
+        }
+
+        Attack(npc, true);
+        return SpecialAttackResult.SUCCESS;
     }
 
     public static void SpawnThralls()

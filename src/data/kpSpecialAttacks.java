@@ -213,6 +213,8 @@ public class kpSpecialAttacks
 
         SPECIAL_ATTACK_COSTS.put("Soulreaper axe", 0); // None, consumes Soul Stacks instead
 
+        SPECIAL_ATTACK_COSTS.put("Arkan blade", 50);
+
         // Leagues items
         /*
         SPECIAL_ATTACK_COSTS.put("Trailblazer axe", 100);
