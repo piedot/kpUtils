@@ -1,6 +1,5 @@
 package utils;
 
-import Main.OnTick;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.adapter.component.StockMarketable;
 import org.rspeer.game.adapter.component.inventory.Bank;
@@ -13,6 +12,7 @@ import org.rspeer.game.scene.SceneObjects;
 import org.rspeer.game.script.Task;
 import org.rspeer.game.script.TaskDescriptor;
 import org.rspeer.game.service.stockmarket.StockMarketEntry;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
 import java.util.Set;
 
@@ -27,9 +27,11 @@ public class kpSellItems extends Task
     private static boolean sellItems = false;
     private static boolean firstSellingCheck = false;
     private static Set<String> itemsToSell = null;
+    private static StockMarketService stockMarketService = null;
 
-    public static void StartSelling(Set<String> itemsToSellIn, boolean stopIfNoItemsToSell)
+    public static void StartSelling(StockMarketService stockMarketServiceIn, Set<String> itemsToSellIn, boolean stopIfNoItemsToSell)
     {
+        stockMarketService = stockMarketServiceIn;
         itemsToSell = itemsToSellIn;
         sellItems = true;
         firstSellingCheck = stopIfNoItemsToSell;
@@ -98,7 +100,7 @@ public class kpSellItems extends Task
         {
             Log.info("Submitting sell offer for " + item.getName());
             firstSellingCheck = false;
-            OnTick.stockMarketService.submit(StockMarketable.Type.SELL, new StockMarketEntry(item.getId(), kpInventory.GetCount(new int[]{item.getId()}, null), -3));
+            stockMarketService.submit(StockMarketable.Type.SELL, new StockMarketEntry(item.getId(), kpInventory.GetCount(new int[]{item.getId()}, null), -3));
         }
 
         Log.info("Done submitting sales");

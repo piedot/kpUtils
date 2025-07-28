@@ -1,6 +1,5 @@
 package utils;
 
-import Main.OnTick;
 import ids.ItemId;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.adapter.component.inventory.Equipment;
@@ -32,7 +31,7 @@ public class kpConsume
     private static boolean eat = false;
     private static boolean drinkPrayer = false;
 
-    public static void Run(boolean freeToEat)
+    public static void Run(boolean freeToEat, int healthToEatAt, int prayerToDrinkAt)
     {
         if (hardFoodDelay > 0) hardFoodDelay--;
         if (fastFoodDelay > 0) fastFoodDelay--;
@@ -43,7 +42,7 @@ public class kpConsume
         drinkPrayer = false;
 
         currentHealth = Health.getCurrent();
-        if (currentHealth <= OnTick.config.getConsumableConfig().getHealthToEatAt())
+        if (currentHealth <= healthToEatAt)
         {
             eat = true;
         }
@@ -54,7 +53,7 @@ public class kpConsume
             currentHealth += 8; // During downtime, we will heal eight health from the soulreaper passive
 
         currentPrayer = Prayers.getPoints();
-        if (currentPrayer <= OnTick.config.getConsumableConfig().getPrayerToDrinkAt())
+        if (currentPrayer <= prayerToDrinkAt)
         {
             drinkPrayer = true;
         }

@@ -1,19 +1,19 @@
 package utils;
 
-import Main.OnTick;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.adapter.component.inventory.Bank;
 import org.rspeer.game.adapter.component.inventory.Equipment;
 import org.rspeer.game.component.Interfaces;
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.component.Item;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class kpRecharging
 {
-    public static boolean RechargeItem(int[] chargedItemIds, int[] unchargedItemIds, int[] chargeItemIds, boolean applyNotedItems, int amountOfCharges, Equipment.Slot equipmentSlot)
+    public static boolean RechargeItem(int[] chargedItemIds, int[] unchargedItemIds, int[] chargeItemIds, boolean applyNotedItems, int amountOfCharges, Equipment.Slot equipmentSlot, StockMarketService stockMarketService)
     {
         Item chargedItem = Inventories.backpack().query().ids(chargedItemIds).results().first();
         chargedItem = equipmentSlot != null && chargedItem == null ? Inventories.equipment().query().ids(chargedItemIds).results().first() : chargedItem;
@@ -94,7 +94,7 @@ public class kpRecharging
 
         for (int chargeItemId : chargeItemIds)
         {
-            Item chargeItem = kpUtils.GetItem(new int[]{chargeItemId}, false, amountOfCharges, amountOfCharges, applyNotedItems, OnTick.stockMarketService);
+            Item chargeItem = kpUtils.GetItem(new int[]{chargeItemId}, false, amountOfCharges, amountOfCharges, applyNotedItems, stockMarketService);
             if (chargeItem == null)
             {
                 Log.warn("Getting " + chargeItemId);
@@ -108,7 +108,7 @@ public class kpRecharging
             Interfaces.closeSubs();
         }
 
-        Item chargeItem = kpUtils.GetItem(chargeItemIds, false, amountOfCharges, amountOfCharges, applyNotedItems, OnTick.stockMarketService);
+        Item chargeItem = kpUtils.GetItem(chargeItemIds, false, amountOfCharges, amountOfCharges, applyNotedItems, stockMarketService);
 
         if (chargeItem == null)
         {

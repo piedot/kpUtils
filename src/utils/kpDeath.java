@@ -1,6 +1,5 @@
 package utils;
 
-import Main.OnTick;
 import ids.ItemId;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
@@ -14,6 +13,7 @@ import org.rspeer.game.movement.Movement;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.scene.Npcs;
 import org.rspeer.game.scene.SceneObjects;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,24 +24,22 @@ public class kpDeath
     public static boolean handlingDeath = false; // Needed to remember that we need to claim an item from death
     public static Position gravePosition = null;
 
-    public static boolean HandleDeath(Set<String> itemsToSell)
+    public static boolean HandleDeath(Set<String> itemsToSell, String deathHandlingType, StockMarketService stockMarketService)
     {
-        String deathHandlingType = OnTick.config.getOtherConfig().getDeathHandlingType();
-
         switch (deathHandlingType)
         {
             case "NONE":
                 return false;
             case "Death's Domain":
-                return HandleDeathsDomain(itemsToSell);
+                return HandleDeathsDomain(itemsToSell, stockMarketService);
             case "Grave":
-                return HandleGrave(itemsToSell);
+                return HandleGrave(itemsToSell, stockMarketService);
         }
 
         return false;
     }
 
-    private static boolean HandleGrave(Set<String> itemsToSell)
+    private static boolean HandleGrave(Set<String> itemsToSell, StockMarketService stockMarketService)
     {
         if (!GravestoneTimer.isActive())
         {
@@ -99,7 +97,7 @@ public class kpDeath
         if (dialogueText != null && dialogueText.contains("You need") && dialogueText.contains("to retrieve your items."))
         {
             Log.info("Not enough GP for grave, selling items");
-            kpSellItems.StartSelling(itemsToSell, true);
+            kpSellItems.StartSelling(stockMarketService, itemsToSell, true);
             return true;
         }
 
@@ -122,7 +120,7 @@ public class kpDeath
         if (Inventories.backpack().isFull())
         {
             Log.info("Equipping equipment to make room");
-            OnTick.config.getEquipmentConfig().getEquipmentLoadout().equip();
+            EquipAllPossibleItems();
             return true;
         }
 
@@ -131,7 +129,7 @@ public class kpDeath
         return true;
     }
 
-    private static boolean HandleDeathsDomain(Set<String> itemsToSell)
+    private static boolean HandleDeathsDomain(Set<String> itemsToSell, StockMarketService stockMarketService)
     {
         int playerRegion = Region.fromPosition(Global.Data.localPosition.fromInstance()).getId();
 
@@ -167,7 +165,7 @@ public class kpDeath
         if (dialogText != null && dialogText.contains("You don't have enough money for the fees. You can"))
         {
             Log.info("Not enough GP to pay the death fee");
-            kpSellItems.StartSelling(itemsToSell, true);
+            kpSellItems.StartSelling(stockMarketService, itemsToSell, true);
             return true;
         }
 
@@ -209,7 +207,7 @@ public class kpDeath
             if (Inventories.backpack().isFull())
             {
                 Log.info("Equipping equipment to make room");
-                OnTick.config.getEquipmentConfig().getEquipmentLoadout().equip();
+                EquipAllPossibleItems();
                 return true;
             }
 
@@ -234,5 +232,20 @@ public class kpDeath
         Log.info("Interacting with Death");
         death.interact("Talk-to");
         return true;
+    }
+
+    private static void EquipAllPossibleItems()
+    {
+        for (Item item : Inventories.backpack().query().results())
+        {
+            List<String> actions = item.getActions();
+            String action = actions.contains("Wield") ? "Wield" : actions.contains("Wear") ? "Wear" : actions.contains("Equip") ? "Equip" : null;
+            if (action != null)
+            {
+                Log.info("Trying to equip " + item.getName() + " (" + action + ")");
+                item.interact(action);
+            }
+        }
+        return;
     }
 }

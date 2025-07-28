@@ -1,6 +1,5 @@
 package utils;
 
-import Bosses.Restocking;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.inventory.Bank;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class kpEquipment
 {
-    public static boolean EnsureWeHaveEquipment(EquipmentLoadout equipmentLoadout, InventoryLoadout inventoryLoadout)
+    public static boolean EnsureWeHaveEquipment(EquipmentLoadout equipmentLoadout, InventoryLoadout inventoryLoadout, Runnable restockCallback)
     {
         equipmentLoadout.setOutOfItemListener(entry ->
         {
@@ -79,7 +78,7 @@ public class kpEquipment
                 return;
             }
             Log.info("Submitting restock " + entry.getKey());
-            Restocking.Submit();
+            restockCallback.run();
             return;
         });
 

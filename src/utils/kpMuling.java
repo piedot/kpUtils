@@ -1,8 +1,8 @@
 package utils;
 
-import Main.Main;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ids.ItemId;
+import org.rspeer.commons.Communication;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;
 import org.rspeer.commons.math.Random;
@@ -15,6 +15,7 @@ import org.rspeer.game.component.Worlds;
 import org.rspeer.game.movement.Movement;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.scene.Players;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
 import java.util.Set;
 
@@ -38,7 +39,10 @@ public class kpMuling
      * @param botPoolId    bot pool id
      * @return true if we are running muling, false once we are finished
      */
-    public static boolean Run(Position mulePosition, int muleWorld, String muleName, String botPoolId, int moneyToKeep, String[] itemsToTradeWithMule, Set<String> itemsToSell)
+    public static boolean Run(
+            Position mulePosition, int muleWorld, String muleName, String botPoolId,
+            int moneyToKeep, String[] itemsToTradeWithMule, Set<String> itemsToSell, Communication.WebSocketClient webSocketClient, StockMarketService stockMarketService
+    )
     {
         int localWorld = Worlds.getLocal();
 
@@ -46,7 +50,7 @@ public class kpMuling
         {
             try
             {
-                Main.webSocketClient.broadcast("bot:" + Global.Data.localPlayer.getName() + ":" + botPoolId);
+                webSocketClient.broadcast("bot:" + Global.Data.localPlayer.getName() + ":" + botPoolId);
             } catch (JsonProcessingException e)
             {
                 throw new RuntimeException(e);
@@ -189,7 +193,7 @@ public class kpMuling
         if (!soldItems)
         {
             Log.info("Submitting item selling request (muling)");
-            kpSellItems.StartSelling(itemsToSell, false);
+            kpSellItems.StartSelling(stockMarketService, itemsToSell, false);
             soldItems = true;
             return true;
         }

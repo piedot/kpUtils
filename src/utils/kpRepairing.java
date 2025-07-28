@@ -1,10 +1,12 @@
 package utils;
 
-import Main.LumbridgeWalker;
 import ids.ItemId;
 import org.rspeer.commons.logging.Log;
+import org.rspeer.commons.math.Distance;
+import org.rspeer.game.Game;
 import org.rspeer.game.adapter.component.inventory.Bank;
 import org.rspeer.game.adapter.scene.Npc;
+import org.rspeer.game.adapter.scene.Region;
 import org.rspeer.game.adapter.scene.SceneObject;
 import org.rspeer.game.component.Dialog;
 import org.rspeer.game.component.Inventories;
@@ -12,7 +14,9 @@ import org.rspeer.game.component.Item;
 import org.rspeer.game.movement.pathfinding.Collisions;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.scene.Npcs;
+import org.rspeer.game.scene.Players;
 import org.rspeer.game.scene.SceneObjects;
+import org.rspeer.game.service.stockmarket.StockMarketService;
 
 import java.util.List;
 import java.util.Set;
@@ -96,7 +100,8 @@ public class kpRepairing
     };
 
     private static int sleepTicks = 0; // Repair takes a tick to appear in bob's axes dialogue
-    public static boolean RepairBrokenEquipment(Set<String> itemsToSell)
+
+    public static boolean RepairBrokenEquipment(Set<String> itemsToSell, StockMarketService stockMarketService)
     {
         if (sleepTicks > 0)
         {
@@ -148,7 +153,7 @@ public class kpRepairing
                 if (!kpBank.WithdrawAll(new int[]{ItemId.COINS}, false))
                 {
                     Log.info("Repair - Failed to withdraw coins");
-                    kpSellItems.StartSelling(itemsToSell, true); // Scuffed?
+                    kpSellItems.StartSelling(stockMarketService, itemsToSell, true); // Scuffed?
                     return true;
                 }
 
@@ -160,7 +165,7 @@ public class kpRepairing
             if (dialogText != null && dialogText.contains("I'll need ") && dialogText.contains(" coins to repair that."))
             {
                 Log.severe("Ran out of coins for item repair");
-                kpSellItems.StartSelling(itemsToSell, true);
+                kpSellItems.StartSelling(stockMarketService, itemsToSell, true);
                 return true;
             }
 
@@ -193,7 +198,7 @@ public class kpRepairing
             if (bob == null || !Collisions.canReach(bobShopInsidePosition))
             {
                 Log.info("Repair - Walking to Bob");
-                LumbridgeWalker.WalkToLumbridge();
+                WalkToLumbridge(stockMarketService);
                 return true;
             }
 
@@ -204,5 +209,40 @@ public class kpRepairing
         }
 
         return false;
+    }
+
+    private static final Position lumbridgePosition = Position.from(3235, 3203, 0); //
+
+    /**
+     * Walks to Lumbridge, will retrieve items to teleport from the bank if needed.
+     */
+    public static void WalkToLumbridge(StockMarketService stockMarketService)
+    {
+        if (Region.fromPosition(Players.self().getPosition().fromInstance()).getId() == 12633) // Death's domain
+        {
+            SceneObject portal = SceneObjects.query().nameContains("Portal").results().first();
+            kpUtils.SafeInteractWith(portal, "Use");
+            return;
+        }
+
+        kpConfig.ConfigItem teleportItem = kpConfig.LUMBRIDGE_TELEPORT_TAB;
+        if (lumbridgePosition.distance(Distance.CHEBYSHEV) > 64)
+        {
+            if (Game.getAccountType().isRegular())
+            {
+                Item lumbridgeTeleport = kpUtils.GetItem(teleportItem.getIds(), false, 1, 5, false, stockMarketService);
+
+                if (lumbridgeTeleport == null)
+                {
+                    Log.info("Getting teleport item " + teleportItem.getName());
+                    return;
+                }
+                Log.info("We have the lumbridge teleport");
+            }
+        }
+
+        Log.info("Walking to lumbridge");
+        kpMovement.WalkTo(lumbridgePosition);
+        return;
     }
 }

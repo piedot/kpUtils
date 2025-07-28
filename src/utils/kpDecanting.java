@@ -1,7 +1,5 @@
 package utils;
 
-import Main.GrandExchangeWalker;
-import Main.OnTick;
 import ids.ItemId;
 import kotlin.Triple;
 import org.rspeer.commons.logging.Log;
@@ -12,10 +10,12 @@ import org.rspeer.game.component.Interfaces;
 import org.rspeer.game.component.Inventories;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Npcs;
+import org.rspeer.game.script.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class kpDecanting
 {
@@ -104,10 +104,8 @@ public class kpDecanting
 
     private static final Area grandExchangeArea = Area.rectangular(3147, 3474, 3181, 3508, 0);
 
-    public static boolean Run()
+    public static boolean Run(int decantPotionsAtDoses, Consumer<Task> walkToGrandExchangeFunction)
     {
-        int decantPotionsAtDoses = OnTick.config.getOtherConfig().getDecantPotionsAtDoses();
-
         if (decantPotionsAtDoses <= 0)
             return false;
 
@@ -159,7 +157,7 @@ public class kpDecanting
                 if (!grandExchangeArea.contains(Global.Data.localPosition))
                 {
                     Log.info("Walking to GE");
-                    GrandExchangeWalker.WalkToGrandExchange(null);
+                    walkToGrandExchangeFunction.accept(null);
                     return true;
                 }
 
