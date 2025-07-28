@@ -1,6 +1,5 @@
 package utils;
 
-import Bosses.Misc.Weapons;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.VarComposite;
 import org.rspeer.game.Vars;
