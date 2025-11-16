@@ -30,6 +30,7 @@ import org.rspeer.game.movement.pathfinding.util.CollisionFlags;
 import org.rspeer.game.position.Position;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Players;
+import org.rspeer.game.scene.Projection;
 import org.rspeer.game.scene.Scene;
 import org.rspeer.game.script.Script;
 import org.rspeer.game.script.meta.ScriptConfig;
@@ -200,172 +201,6 @@ public class kpUtils
         return component != null && component.isVisible();
     }
 
-    /**
-     * @param source source position
-     * @param target target position
-     * @return If the target is in our field of view
-     */
-    public static boolean IsInFieldOfView(SceneNode source, SceneNode target)
-    {
-        if (source.getFloorLevel() != target.getFloorLevel())
-        {
-            return false;
-        }
-
-        Position sourcePosition = source.getPosition().toScene();
-        Position targetPosition = target.getPosition().toScene();
-
-        if (sourcePosition.getX() == targetPosition.getX() && sourcePosition.getY() == targetPosition.getY())
-        {
-            return true;
-        }
-
-        if (!sourcePosition.isInScene() || !targetPosition.isInScene())
-        {
-            return false;
-        }
-
-        RSCollisionMap[] collisionMap = Game.getClient().getCollisionMaps();
-
-        if (collisionMap == null)
-        {
-            return false;
-        }
-
-        int[][] flags = collisionMap[source.getFloorLevel()].getFlags();
-
-        int dx = targetPosition.getX() - sourcePosition.getX();
-        int dy = targetPosition.getY() - sourcePosition.getY();
-        int dxAbs = Math.abs(dx);
-        int dyAbs = Math.abs(dy);
-
-        int xFlags = CollisionFlags.SOLID;
-        int yFlags = CollisionFlags.SOLID;
-
-        if (dx < 0)
-        {
-            xFlags |= CollisionFlags.FOV_EAST;
-        }
-        else
-        {
-            xFlags |= CollisionFlags.FOV_WEST;
-        }
-
-        if (dy < 0)
-        {
-            yFlags |= CollisionFlags.FOV_NORTH;
-        }
-        else
-        {
-            yFlags |= CollisionFlags.FOV_SOUTH;
-        }
-
-        if (dxAbs > dyAbs)
-        {
-            int x = sourcePosition.getX();
-
-            int yBig = sourcePosition.getY() << 16; // The y position is represented as a bigger number to handle rounding
-
-            int slope = (dy << 16) / dxAbs;
-
-            yBig += 0x8000; // Add half of a tile
-
-            if (dy < 0)
-            {
-                yBig--; // For correct rounding
-            }
-
-            int direction = dx < 0 ? -1 : 1;
-
-            while (x != targetPosition.getX())
-            {
-                x += direction;
-                int y = yBig >>> 16;
-
-                if ((flags[x][y] & xFlags) != 0)
-                {
-                    // Collision while traveling on the x axis
-                    return false;
-                }
-
-                yBig += slope;
-                int nextY = yBig >>> 16;
-
-                if (nextY != y && (flags[x][nextY] & yFlags) != 0)
-                {
-                    // Collision while traveling on the y axis
-                    return false;
-                }
-            }
-        }
-        else // if (dxAbs < dyAbs)
-        {
-            int y = sourcePosition.getY();
-
-            int xBig = sourcePosition.getX() << 16; // The x position is represented as a bigger number to handle rounding
-
-            int slope = (dx << 16) / dyAbs;
-
-            xBig += 0x8000; // Add half of a tile
-
-            if (dx < 0)
-            {
-                xBig--; // For correct rounding
-            }
-
-            int direction = dy < 0 ? -1 : 1;
-
-            while (y != targetPosition.getY())
-            {
-                y += direction;
-                int x = xBig >>> 16;
-                if ((flags[x][y] & yFlags) != 0)
-                {
-                    // Collision while traveling on the y axis
-                    return false;
-                }
-
-                xBig += slope;
-
-                int nextX = xBig >>> 16;
-
-                if (nextX != x && (flags[nextX][y] & xFlags) != 0)
-                {
-                    // Collision while traveling on the x axis
-                    return false;
-                }
-            }
-        }
-        /* Not sure why this was placed here
-        else
-        {
-            // adjacent diagonal
-            int x = sourcePosition.getX();
-            int y = sourcePosition.getY();
-            int directionX = Integer.compare(targetPosition.getX(), sourcePosition.getX());
-            int directionY = Integer.compare(targetPosition.getY(), sourcePosition.getY());
-
-            while (x != targetPosition.getX() || y != targetPosition.getY())
-            {
-                int xNext = x + directionX;
-                int yNext = y + directionY;
-
-                // Check for collisions
-                if ((flags[x][y] & xFlags) != 0 || (flags[xNext][yNext] & yFlags) != 0)
-                {
-                    return false;
-                }
-
-                x = xNext;
-                y = yNext;
-            }
-        }
-        */
-
-        // No collision
-        return true;
-    }
-
     public static class AreaPositionDistance
     {
         public Position position;
@@ -437,7 +272,7 @@ public class kpUtils
         {
             AreaPositionDistance npcAreaPositionDistance = GetAreaPositionDistance(sourceAttackPosition, targetAttackPositions);
 
-            if (IsInFieldOfView(sourceAttackPosition, npcAreaPositionDistance.position) && npcAreaPositionDistance.distance <= weaponRange)
+            if (Projection.isInFieldOfView(sourceAttackPosition, npcAreaPositionDistance.position) && npcAreaPositionDistance.distance <= weaponRange)
             {
                 return true;
             }
