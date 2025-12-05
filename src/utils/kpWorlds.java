@@ -106,6 +106,12 @@ public class kpWorlds
             Interfaces.closeSubs();
         }
 
+        if (world <= 300 || world > 700)
+        {
+            Log.severe("Invalid mule world " + world);
+            return false;
+        }
+
         return Worlds.hopTo(world);
     }
 

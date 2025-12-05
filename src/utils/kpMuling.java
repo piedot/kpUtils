@@ -77,7 +77,7 @@ public class kpMuling
                 oldWorld = localWorld;
             }
 
-            if (muleWorld < 300 || muleWorld > 600)
+            if (muleWorld <= 300 || muleWorld > 700)
             {
                 Log.severe("Invalid mule world " + muleWorld);
                 return true;
