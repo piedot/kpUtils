@@ -72,6 +72,15 @@ public class kpWorlds
 
                 return true;
             })
+            .filter(w -> {
+                switch (w.getId())
+                {
+                    case 596: // Buggy worlds, don't show ping and have received reports of them having high CG death rates
+                    case 597: // ^
+                        return false;
+                }
+                return true;
+            })
             .results().random();
 
         if (world == null)
