@@ -824,7 +824,8 @@ public class kpUtils
 
             if (stockMarketService == null)
             {
-                Log.severe("No " + Arrays.toString(itemIds) + " found in bank and no stockMarketService provided, skipping buy");
+                Log.severe("No " + Arrays.toString(itemIds) + " found in bank and no stockMarketService provided, stopping script");
+                kpStopScript.Stop();
                 return null;
             }
             if (!Game.getAccountType().isRegular())
