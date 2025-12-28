@@ -69,6 +69,14 @@ public class kpConsumables
             this.overheal = overheal;
         }
 
+        public Consumable(List<TYPE> types, int effectAmount, boolean overheal)
+        {
+            this.types = types;
+            this.effectAmount = effectAmount;
+            this.effectFormula = null;
+            this.overheal = overheal;
+        }
+
         public List<TYPE> getTypes()
         {
             return types;
@@ -309,6 +317,18 @@ public class kpConsumables
         potions.put("Divine ranging potion", new Consumable(List.of(Consumable.TYPE.RANGED_POTION), kpConsumables::RangingPotionFormula));
         potions.put("Magic potion", new Consumable(List.of(Consumable.TYPE.MAGIC_POTION), kpConsumables::MagicPotionFormula));
         potions.put("Divine magic potion", new Consumable(List.of(Consumable.TYPE.MAGIC_POTION), kpConsumables::MagicPotionFormula));
+
+        // Sailing food
+        hardFood.put("Haddock", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 18, true));
+        hardFood.put("Yellowfin", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 19)); // Restores 20% energy when eaten
+        fastFood.put("Halibut", new Consumable(List.of(Consumable.TYPE.FAST_FOOD), 20)); // Fast food (combo eat)
+        hardFood.put("Bluefin", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 22)); // Also restores 5 prayer points
+        hardFood.put("Marlin", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 24));
+
+        hardFood.put("Giant krill", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 17));
+        hardFood.put("Red crab meat", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 8));
+        hardFood.put("Blue crab meat", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 14));
+        hardFood.put("Rainbow crab meat", new Consumable(List.of(Consumable.TYPE.HARD_FOOD), 19));
 
         // Fast food
         fastFood.put("Cooked karambwan", new Consumable(List.of(Consumable.TYPE.FAST_FOOD), 18));

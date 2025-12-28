@@ -26,6 +26,8 @@ public class kpDeath
 
     public static boolean HandleDeath(Set<String> itemsToSell, String deathHandlingType, StockMarketService stockMarketService)
     {
+        // TODO Drop a food if our inventory is full
+
         switch (deathHandlingType)
         {
             case "NONE":
@@ -121,6 +123,7 @@ public class kpDeath
         {
             Log.info("Equipping equipment to make room");
             EquipAllPossibleItems();
+            kpDropItem.AnyConsumable();
             return true;
         }
 
@@ -179,7 +182,8 @@ public class kpDeath
                 "Can I collect the items from that gravestone now?",
                 "Bring my items here now; I'll pay your fee.",
                 "Pay Death's fee.",
-                "Yes, have you got anything for me?"
+                "Yes, have you got anything for me?",
+                "Put it down." // Dropping confirmation (to help empty out inventory when it's full to claim items)
         );
         if (kpDialog.Select(deathsDomainOptions))
         {
@@ -208,6 +212,7 @@ public class kpDeath
             {
                 Log.info("Equipping equipment to make room");
                 EquipAllPossibleItems();
+                kpDropItem.AnyConsumable();
                 return true;
             }
 
