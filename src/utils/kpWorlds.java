@@ -72,6 +72,15 @@ public class kpWorlds
 
                 return true;
             })
+            .filter(w -> {
+                switch (w.getId())
+                {
+                    case 596: // Buggy worlds, don't show ping and have received reports of them having high CG death rates
+                    case 597: // ^
+                        return false;
+                }
+                return true;
+            })
             .results().random();
 
         if (world == null)
@@ -104,6 +113,12 @@ public class kpWorlds
         {
             Log.info("kpWorlds - closing interfaces");
             Interfaces.closeSubs();
+        }
+
+        if (world <= 300 || world > 700)
+        {
+            Log.severe("Invalid mule world " + world);
+            return false;
         }
 
         return Worlds.hopTo(world);
