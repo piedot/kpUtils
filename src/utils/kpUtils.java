@@ -1,6 +1,5 @@
 package utils;
 
-import jag.game.scene.RSCollisionMap;
 import org.rspeer.commons.discord.DiscordWebhook;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.commons.math.Distance;

@@ -3,7 +3,6 @@ package utils;
 import data.kpSpecialAttacks;
 import data.kpWeapons;
 import ids.ItemId;
-import jag.game.scene.entity.RSEntityMarker;
 import org.rspeer.commons.logging.Log;
 import org.rspeer.game.Vars;
 import org.rspeer.game.adapter.component.inventory.Equipment;
@@ -53,7 +52,7 @@ public class kpCombat
 
         if (needsRefreshment)
         {
-            SceneObject poolOfRefreshment = SceneObjects.query().types(RSEntityMarker.class).names("Pool of Refreshment", "Ornate pool of Rejuvenation").actions("Drink").results().nearest();
+            SceneObject poolOfRefreshment = SceneObjects.query().types(SceneObject.Type.SPRITE).names("Pool of Refreshment", "Ornate pool of Rejuvenation").actions("Drink").results().nearest();
 
             if (poolOfRefreshment == null)
             {

@@ -51,7 +51,7 @@ public class kpWorlds
             .filter(w -> {
                 if (w.getFlags().contains(World.Flag.SKILL_TOTAL))
                 {
-                    String[] parts = w.getProvider().getActivity().split(" "); // "1250 skill total"
+                    String[] parts = w.getActivity().split(" "); // "1250 skill total"
 
                     int requiredTotalLevel = Integer.MAX_VALUE;
 
@@ -89,7 +89,7 @@ public class kpWorlds
             return;
         }
 
-        Log.info("Hopping worlds to " + world.getId() + " " + world.getProvider().getActivity());
+        Log.info("Hopping worlds to " + world.getId() + " " + world.getActivity());
         Hop(world);
 
         return;
