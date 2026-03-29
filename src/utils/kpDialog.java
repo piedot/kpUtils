@@ -219,7 +219,7 @@ public class kpDialog
     {
         if (!EnterInput.isOpen())
         {
-            Log.warn("TypeValue input was not visible");
+            Log.warn("TypeValue input was not open");
             return false;
         }
         EnterInput.initiate(value);
