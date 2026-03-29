@@ -5,6 +5,7 @@ import org.rspeer.game.adapter.component.InterfaceComponent;
 import org.rspeer.game.component.*;
 import org.rspeer.game.movement.Movement;
 import org.rspeer.game.query.component.ComponentQuery;
+import org.rspeer.game.query.results.ComponentQueryResults;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ public class kpDialog
 
     public static boolean Select(List<String> options)
     {
-        List<InterfaceComponent> components = Dialog.getChatOptions().actions().getDefaultProvider().get();
+        ComponentQueryResults components = Dialog.getChatOptions().results();
 
         for (InterfaceComponent component : components)
         {
@@ -40,7 +41,7 @@ public class kpDialog
 
     public static boolean SelectContains(List<String> options)
     {
-        List<InterfaceComponent> components = Dialog.getChatOptions().actions().getDefaultProvider().get();
+        ComponentQueryResults components = Dialog.getChatOptions().results();
 
         for (InterfaceComponent component : components)
         {
@@ -216,8 +217,7 @@ public class kpDialog
 
     public static boolean TypeValue(int value)
     {
-        InterfaceComponent dialogInput = Interfaces.getDirect(InterfaceComposite.CHATBOX, 43);
-        if (dialogInput == null || !dialogInput.isVisible() || !dialogInput.getText().contains("*"))
+        if (!EnterInput.isOpen())
         {
             Log.warn("TypeValue input was not visible");
             return false;

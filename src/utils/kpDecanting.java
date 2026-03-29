@@ -8,6 +8,7 @@ import org.rspeer.game.adapter.component.inventory.Bank;
 import org.rspeer.game.adapter.scene.Npc;
 import org.rspeer.game.component.Interfaces;
 import org.rspeer.game.component.Inventories;
+import org.rspeer.game.gameval.InterfaceId;
 import org.rspeer.game.position.area.Area;
 import org.rspeer.game.scene.Npcs;
 import org.rspeer.game.script.Task;
@@ -161,7 +162,7 @@ public class kpDecanting
                     return true;
                 }
 
-                InterfaceComponent fourDosesButton = Interfaces.getDirect(582, 6);
+                InterfaceComponent fourDosesButton = Interfaces.getDirect(InterfaceId.Decant.DECANT_4);
 
                 if (fourDosesButton != null && fourDosesButton.isVisible())
                 {
