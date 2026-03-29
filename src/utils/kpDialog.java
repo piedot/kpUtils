@@ -1,11 +1,8 @@
 package utils;
 
 import org.rspeer.commons.logging.Log;
-import org.rspeer.game.Keyboard;
 import org.rspeer.game.adapter.component.InterfaceComponent;
-import org.rspeer.game.component.Dialog;
-import org.rspeer.game.component.InterfaceComposite;
-import org.rspeer.game.component.Interfaces;
+import org.rspeer.game.component.*;
 import org.rspeer.game.movement.Movement;
 import org.rspeer.game.query.component.ComponentQuery;
 
@@ -127,7 +124,7 @@ public class kpDialog
             return false;
         }
 
-        Keyboard.sendText(String.valueOf(maxChargesToAdd), true);
+        EnterInput.initiate(maxChargesToAdd);
 
         return true;
     }
@@ -183,7 +180,7 @@ public class kpDialog
             return false;
         }
 
-        Keyboard.sendText(String.valueOf(maxChargesToAdd), true);
+        EnterInput.initiate(maxChargesToAdd);
 
         return true;
     }
@@ -212,7 +209,7 @@ public class kpDialog
             return false;
         }
 
-        Keyboard.sendText(String.valueOf(charges), true);
+        EnterInput.initiate(charges);
 
         return true;
     }
@@ -225,7 +222,7 @@ public class kpDialog
             Log.warn("TypeValue input was not visible");
             return false;
         }
-        Keyboard.sendText(String.valueOf(value), true);
+        EnterInput.initiate(value);
         return true;
     }
 }
