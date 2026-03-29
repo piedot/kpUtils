@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public class NpcPathFinder
 {
+
     public enum TYPE
     {
         NOWALK,
